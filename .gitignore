@@ -1,4 +1,14 @@
 node_modules
 dist
 .next
+out
+coverage
 .superpowers
+*.tsbuildinfo
+.env*
+!.env.example
+pnpm-debug.log
+npm-debug.log
+.turbo
+.DS_Store
+next-env.d.ts
