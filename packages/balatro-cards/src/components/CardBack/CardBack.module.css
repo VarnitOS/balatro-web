@@ -1,0 +1,9 @@
+.back {
+  width: var(--card-w, 71px);
+  height: var(--card-h, 95px);
+  border-radius: var(--card-radius, 5px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  image-rendering: pixelated;
+  background-repeat: no-repeat;
+  background-color: #1a1a2e;
+}
