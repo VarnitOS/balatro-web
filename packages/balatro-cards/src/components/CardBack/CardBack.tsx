@@ -1,5 +1,5 @@
 import { getCardBackStyle } from '../../core/sprites'
-import styles from './CardBack.module.css'
+import './CardBack.css'
 
 interface CardBackProps {
   customSrc?: string  // override with a custom back image
@@ -13,7 +13,7 @@ export function CardBack({ customSrc, className }: CardBackProps) {
 
   return (
     <div
-      className={`${styles.back} ${className ?? ''}`}
+      className={`bc-back ${className ?? ''}`}
       style={spriteStyle}
       aria-hidden="true"
     />

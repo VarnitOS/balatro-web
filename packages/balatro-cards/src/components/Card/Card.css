@@ -1,0 +1,60 @@
+.bc-card {
+  position: relative;
+  width: var(--card-w, 71px);
+  height: var(--card-h, 95px);
+  cursor: pointer;
+  user-select: none;
+  border-radius: var(--card-radius, 5px);
+  transform-origin: center bottom;
+  will-change: transform;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.6),
+    0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.bc-face {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--card-radius, 5px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: #ddd;
+  image-rendering: pixelated;
+  background-repeat: no-repeat;
+  overflow: hidden;
+  position: relative;
+}
+
+.bc-customFace {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--card-radius, 5px);
+}
+
+.bc-seal {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 14px;
+  height: 14px;
+  image-rendering: pixelated;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.bc-enhancement {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--card-radius, 5px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.bc-bonus  { background: rgba(0, 150, 255, 0.15); }
+.bc-mult   { background: rgba(255, 50, 50, 0.15); }
+.bc-wild   { background: rgba(180, 80, 255, 0.15); }
+.bc-glass  { background: rgba(200, 240, 255, 0.2); }
+.bc-steel  { background: rgba(120, 140, 180, 0.2); }
+.bc-stone  { background: rgba(80, 80, 80, 0.25); }
+.bc-gold   { background: rgba(255, 200, 0, 0.2); }
+.bc-lucky  { background: rgba(0, 220, 120, 0.2); }

@@ -1,16 +1,16 @@
-/* src/components/CardBack/CardBack.module.css */
-.back {
+/* src/components/CardBack/CardBack.css */
+.bc-back {
   width: var(--card-w, 71px);
   height: var(--card-h, 95px);
   border-radius: var(--card-radius, 5px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   image-rendering: pixelated;
   background-repeat: no-repeat;
-  background-color: #1a1a2e;
+  background-color: #4a2545;
 }
 
-/* src/components/Card/Card.module.css */
-.card {
+/* src/components/Card/Card.css */
+.bc-card {
   position: relative;
   width: var(--card-w, 71px);
   height: var(--card-h, 95px);
@@ -19,8 +19,9 @@
   border-radius: var(--card-radius, 5px);
   transform-origin: center bottom;
   will-change: transform;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), 0 2px 4px rgba(0, 0, 0, 0.4);
 }
-.face {
+.bc-face {
   width: 100%;
   height: 100%;
   border-radius: var(--card-radius, 5px);
@@ -31,13 +32,13 @@
   overflow: hidden;
   position: relative;
 }
-.customFace {
+.bc-customFace {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: var(--card-radius, 5px);
 }
-.seal {
+.bc-seal {
   position: absolute;
   top: 2px;
   right: 2px;
@@ -47,44 +48,44 @@
   pointer-events: none;
   z-index: 2;
 }
-.enhancement {
+.bc-enhancement {
   position: absolute;
   inset: 0;
   border-radius: var(--card-radius, 5px);
   pointer-events: none;
   z-index: 1;
 }
-.bonus {
+.bc-bonus {
   background: rgba(0, 150, 255, 0.15);
 }
-.mult {
+.bc-mult {
   background: rgba(255, 50, 50, 0.15);
 }
-.wild {
+.bc-wild {
   background: rgba(180, 80, 255, 0.15);
 }
-.glass {
+.bc-glass {
   background: rgba(200, 240, 255, 0.2);
 }
-.steel {
+.bc-steel {
   background: rgba(120, 140, 180, 0.2);
 }
-.stone {
+.bc-stone {
   background: rgba(80, 80, 80, 0.25);
 }
-.gold {
+.bc-gold {
   background: rgba(255, 200, 0, 0.2);
 }
-.lucky {
+.bc-lucky {
   background: rgba(0, 220, 120, 0.2);
 }
 
-/* src/effects/effects.module.css */
-.foil {
+/* src/effects/effects.css */
+.bc-foil {
   position: relative;
   overflow: hidden;
 }
-.foil::after {
+.bc-foil::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -99,10 +100,10 @@
   background-size: 200% 200%;
   mix-blend-mode: color-dodge;
   pointer-events: none;
-  animation: foilShimmer 3s ease-in-out infinite;
+  animation: bc-foilShimmer 3s ease-in-out infinite;
   border-radius: inherit;
 }
-@keyframes foilShimmer {
+@keyframes bc-foilShimmer {
   0%, 100% {
     background-position: 0% 50%;
     opacity: 0.6;
@@ -112,11 +113,11 @@
     opacity: 1;
   }
 }
-.holo {
+.bc-holo {
   position: relative;
   overflow: hidden;
 }
-.holo::after {
+.bc-holo::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -131,10 +132,10 @@
       rgba(160, 0, 255, 0.25));
   mix-blend-mode: overlay;
   pointer-events: none;
-  animation: holoHue 4s linear infinite;
+  animation: bc-holoHue 4s linear infinite;
   border-radius: inherit;
 }
-@keyframes holoHue {
+@keyframes bc-holoHue {
   0% {
     filter: hue-rotate(0deg) brightness(1);
   }
@@ -145,11 +146,11 @@
     filter: hue-rotate(360deg) brightness(1);
   }
 }
-.polychrome {
+.bc-polychrome {
   position: relative;
   overflow: hidden;
 }
-.polychrome::after {
+.bc-polychrome::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -163,10 +164,10 @@
   background-size: 300% 300%;
   mix-blend-mode: overlay;
   pointer-events: none;
-  animation: polychromePulse 1.5s ease-in-out infinite;
+  animation: bc-polychromePulse 1.5s ease-in-out infinite;
   border-radius: inherit;
 }
-@keyframes polychromePulse {
+@keyframes bc-polychromePulse {
   0% {
     background-position: 0% 0%;
     filter: hue-rotate(0deg) saturate(1.5);
@@ -180,15 +181,15 @@
     filter: hue-rotate(360deg) saturate(1.5);
   }
 }
-.negative {
+.bc-negative {
   filter: invert(1) hue-rotate(180deg);
   box-shadow: 0 0 16px 4px rgba(0, 0, 0, 0.8), 0 0 8px 2px rgba(40, 0, 80, 0.6);
 }
-.debuffed {
+.bc-debuffed {
   position: relative;
   filter: grayscale(0.6) brightness(0.85);
 }
-.debuffed::before {
+.bc-debuffed::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -197,10 +198,10 @@
   border-radius: inherit;
   z-index: 1;
 }
-.dissolving {
-  animation: dissolveOut 0.4s ease-in forwards;
+.bc-dissolving {
+  animation: bc-dissolveOut 0.4s ease-in forwards;
 }
-@keyframes dissolveOut {
+@keyframes bc-dissolveOut {
   0% {
     clip-path: inset(0% 0% 0% 0%);
     opacity: 1;
@@ -210,10 +211,10 @@
     opacity: 0;
   }
 }
-.materializing {
-  animation: materializeIn 0.4s ease-out forwards;
+.bc-materializing {
+  animation: bc-materializeIn 0.4s ease-out forwards;
 }
-@keyframes materializeIn {
+@keyframes bc-materializeIn {
   0% {
     clip-path: inset(50% 50% 50% 50%);
     opacity: 0;
@@ -223,40 +224,43 @@
     opacity: 1;
   }
 }
-.selected {
-  box-shadow: 0 0 0 2px #f4d03f, 0 0 14px 4px rgba(244, 208, 63, 0.5);
+.bc-selected {
+  box-shadow:
+    0 0 0 2px #f4d03f,
+    0 0 12px 3px rgba(244, 208, 63, 0.7),
+    0 0 28px 6px rgba(244, 208, 63, 0.3);
 }
-.hovered {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.4);
+.bc-hovered {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7), 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
-/* src/components/CardArea/CardArea.module.css */
-.area {
+/* src/components/CardArea/CardArea.css */
+.bc-area {
   position: relative;
   display: flex;
   align-items: flex-end;
   justify-content: center;
 }
-.fan {
+.bc-fan {
   min-height: calc(var(--card-h, 95px) + 30px);
   min-width: 200px;
 }
-.pile {
+.bc-pile {
   min-height: var(--card-h, 95px);
   min-width: var(--card-w, 71px);
   cursor: pointer;
 }
-.row {
+.bc-row {
   gap: 8px;
   flex-wrap: wrap;
 }
-.cardWrapper {
+.bc-cardWrapper {
   position: absolute;
 }
-.rowWrapper {
+.bc-rowWrapper {
   position: relative;
 }
-.dropTarget {
+.bc-dropTarget {
   outline: 2px dashed rgba(244, 208, 63, 0.4);
   border-radius: 8px;
 }

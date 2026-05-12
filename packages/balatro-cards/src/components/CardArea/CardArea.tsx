@@ -4,7 +4,7 @@ import type { BalatroCard, LayoutType } from '../../core/types'
 import { getFanPositions, getRowPositions } from '../../animations/fan'
 import { useSound } from '../../hooks/useSound'
 import { Card } from '../Card/Card'
-import styles from './CardArea.module.css'
+import './CardArea.css'
 
 interface CardAreaProps {
   cards: BalatroCard[]
@@ -38,19 +38,19 @@ export function CardArea({
     const positions = getFanPositions(cards.length, { maxAngle })
 
     return (
-      <div className={`${styles.area} ${styles.fan} ${className}`}>
+      <div className={`bc-area bc-fan ${className}`}>
         <AnimatePresence>
           {cards.map((card, i) => {
             const pos = positions[i]
             return (
               <motion.div
                 key={card.id}
-                className={styles.cardWrapper}
+                className="bc-cardWrapper"
                 style={{ zIndex: pos.zIndex }}
-                animate={{ transform: `translateX(${pos.x}px) translateY(${pos.y}px) rotate(${pos.rotate}deg)` }}
-                initial={{ opacity: 0, scale: 0.8 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                animate={{ x: pos.x, y: pos.y, rotate: pos.rotate, opacity: 1, scale: 1 }}
+                initial={{ x: pos.x, y: pos.y + 40, rotate: pos.rotate, opacity: 0, scale: 0.5 }}
+                exit={{ opacity: [1, 1, 0], scale: [1.2, 0.05], y: [pos.y - 8, pos.y - 80], transition: { duration: 0.32, times: [0, 0.15, 1], ease: 'easeIn' } }}
+                transition={{ type: 'spring', stiffness: 320, damping: 28 }}
               >
                 <Card
                   card={card}
@@ -73,7 +73,7 @@ export function CardArea({
     const backgroundCards = cards.slice(-3, -1)  // last 3 excluding top
     return (
       <div
-        className={`${styles.area} ${styles.pile} ${className}`}
+        className={`bc-area bc-pile ${className}`}
         onClick={() => {
           if (type === 'deck' && onDraw) {
             playSound('cardSlide1', { pitch: 0.9 + Math.random() * 0.2 })
@@ -108,16 +108,16 @@ export function CardArea({
   // Row layout
   const positions = getRowPositions(cards.length)
   return (
-    <div className={`${styles.area} ${styles.row} ${className}`}>
+    <div className={`bc-area bc-row ${className}`}>
       <AnimatePresence>
         {cards.map((card, i) => (
           <motion.div
             key={card.id}
-            className={styles.rowWrapper}
-            animate={{ marginLeft: positions[i].x }}
-            initial={{ opacity: 0, scale: 0.8 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            className="bc-rowWrapper"
+            animate={{ marginLeft: positions[i].x, opacity: 1, scale: 1, y: 0 }}
+            initial={{ opacity: 0, scale: 0.5, y: 40 }}
+            exit={{ opacity: 0, scale: 0.3, y: -60, transition: { duration: 0.22, ease: [0.4, 0, 1, 1] } }}
+            transition={{ type: 'spring', stiffness: 320, damping: 28 }}
           >
             <Card
               card={card}

@@ -214,8 +214,8 @@ function getCardBackStyle() {
     backgroundImage: "url(/textures/1x/Enhancers.png)",
     backgroundSize: `${ENH_COLS * 100}% ${ENH_ROWS * 100}%`,
     // 700% 500%
-    backgroundPosition: `${2 / (ENH_COLS - 1) * 100}% 0%`,
-    // col 2 of 7
+    backgroundPosition: "0% 0%",
+    // col=0, row=0 = Red Deck back
     imageRendering: "pixelated"
   };
 }
@@ -223,31 +223,28 @@ function getCardBackStyle() {
 // src/animations/spring.ts
 var cardSpring = {
   type: "spring",
-  stiffness: 400,
-  damping: 30,
-  mass: 0.8
+  stiffness: 380,
+  damping: 22,
+  mass: 0.7
 };
 var hoverSpring = {
   type: "spring",
-  stiffness: 500,
-  damping: 25,
+  stiffness: 550,
+  damping: 18,
   mass: 0.5
 };
 var juiceSpring = {
   type: "spring",
-  stiffness: 600,
-  damping: 20,
+  stiffness: 700,
+  damping: 16,
   mass: 0.4
 };
 var layoutSpring = {
   type: "spring",
   stiffness: 300,
-  damping: 35,
+  damping: 32,
   mass: 1
 };
-
-// src/components/CardBack/CardBack.module.css
-var CardBack_default = {};
 
 // src/components/CardBack/CardBack.tsx
 var import_jsx_runtime2 = require("react/jsx-runtime");
@@ -256,18 +253,12 @@ function CardBack({ customSrc, className }) {
   return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
     "div",
     {
-      className: `${CardBack_default.back} ${className ?? ""}`,
+      className: `bc-back ${className ?? ""}`,
       style: spriteStyle,
       "aria-hidden": "true"
     }
   );
 }
-
-// src/components/Card/Card.module.css
-var Card_default = {};
-
-// src/effects/effects.module.css
-var effects_default = {};
 
 // src/components/Card/Card.tsx
 var import_jsx_runtime3 = require("react/jsx-runtime");
@@ -287,41 +278,59 @@ function Card({
     setFacing(card.facing);
   }, [card.id, card.facing]);
   const [isHovered, setIsHovered] = (0, import_react3.useState)(false);
+  const [isDragging, setIsDragging] = (0, import_react3.useState)(false);
+  const [dragOffsetX, setDragOffsetX] = (0, import_react3.useState)(0);
   const { playSound } = useSound();
-  const handleClick = (0, import_react3.useCallback)(async () => {
-    await animate(scope.current, {
-      scale: 1.08,
-      rotate: (Math.random() > 0.5 ? 1 : -1) * 3.6
-    }, { duration: 0.08, ease: "easeOut" });
-    animate(scope.current, { scale: 1, rotate: 0 }, {
-      type: "spring",
-      stiffness: 500,
-      damping: 25
-    });
-    onClick?.(card);
-    playSound("highlight1", { pitch: 0.9 + Math.random() * 0.2, volume: 0.5 });
-  }, [card, onClick, animate, scope, playSound]);
+  const clickTimerRef = (0, import_react3.useRef)(null);
+  (0, import_react3.useEffect)(() => () => {
+    if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
+  }, []);
+  const tiltX = (0, import_framer_motion.useMotionValue)(0);
+  const tiltY = (0, import_framer_motion.useMotionValue)(0);
+  const handleMouseMove = (0, import_react3.useCallback)((e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const nx = (e.clientX - rect.left) / rect.width - 0.5;
+    const ny = (e.clientY - rect.top) / rect.height - 0.5;
+    tiltX.set(-ny * 24);
+    tiltY.set(nx * 24);
+  }, [tiltX, tiltY]);
+  const resetTilt = (0, import_react3.useCallback)(() => {
+    (0, import_framer_motion.animate)(tiltX, 0, { type: "spring", stiffness: 400, damping: 28 });
+    (0, import_framer_motion.animate)(tiltY, 0, { type: "spring", stiffness: 400, damping: 28 });
+  }, [tiltX, tiltY]);
+  const handleClick = (0, import_react3.useCallback)(() => {
+    if (isDragging) return;
+    if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
+    clickTimerRef.current = setTimeout(async () => {
+      clickTimerRef.current = null;
+      await animate(scope.current, { scale: 1.12, rotate: (Math.random() > 0.5 ? 1 : -1) * 4 }, { duration: 0.07 });
+      animate(scope.current, { scale: 1, rotate: 0 }, { type: "spring", stiffness: 500, damping: 22 });
+      onClick?.(card);
+      playSound("highlight1", { pitch: 0.9 + Math.random() * 0.2, volume: 0.6 });
+    }, 180);
+  }, [card, onClick, animate, scope, playSound, isDragging]);
   const flip = (0, import_react3.useCallback)(async () => {
+    if (clickTimerRef.current) {
+      clearTimeout(clickTimerRef.current);
+      clickTimerRef.current = null;
+    }
     playSound("card1", { pitch: 0.9 + Math.random() * 0.2 });
-    await animate(scope.current, { scaleX: 0 }, {
-      duration: 0.1,
-      ease: [0.4, 0, 1, 1]
-    });
+    await animate(scope.current, { scaleX: 0 }, { duration: 0.1, ease: [0.4, 0, 1, 1] });
     setFacing((f) => f === "front" ? "back" : "front");
-    await animate(scope.current, { scaleX: 1 }, {
-      duration: 0.1,
-      ease: [0, 0, 0.6, 1]
-    });
+    await animate(scope.current, { scaleX: 1 }, { duration: 0.1, ease: [0, 0, 0.6, 1] });
   }, [animate, scope, playSound]);
   const handleDragEnd = (0, import_react3.useCallback)(
     (_, info) => {
+      setIsDragging(false);
+      setDragOffsetX(0);
       onDragEnd?.(card, info);
     },
     [card, onDragEnd]
   );
-  const editionClass = card.edition ? effects_default[card.edition] : "";
-  const enhancementClass = card.enhancement ? Card_default[card.enhancement] : "";
+  const editionClass = card.edition ? `bc-${card.edition}` : "";
+  const enhancementClass = card.enhancement ? `bc-${card.enhancement}` : "";
   const faceStyle = hasSprite(card.rank, card.suit) ? getCardFaceStyle(card.rank, card.suit) : {};
+  const dragRotate = isDragging ? Math.max(-18, Math.min(18, dragOffsetX * 0.05)) : 0;
   return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(
     import_framer_motion.motion.div,
     {
@@ -329,30 +338,51 @@ function Card({
       layout: true,
       layoutId,
       className: [
-        Card_default.card,
-        selected ? effects_default.selected : "",
-        isHovered ? effects_default.hovered : "",
-        card.debuffed ? effects_default.debuffed : "",
+        "bc-card",
+        selected ? "bc-selected" : "",
+        isHovered ? "bc-hovered" : "",
+        card.debuffed ? "bc-debuffed" : "",
         editionClass
       ].join(" "),
-      style,
-      animate: {
-        y: isHovered ? -14 : 0,
-        scale: selected ? 1.04 : 1
+      style: {
+        ...style,
+        transformPerspective: 600,
+        rotateX: tiltX,
+        rotateY: tiltY
       },
-      transition: isHovered ? hoverSpring : cardSpring,
+      animate: {
+        y: isHovered && !isDragging ? [selected ? -25 : -14, selected ? -30 : -19] : selected ? -25 : 0,
+        scale: selected ? 1.15 : isHovered && !isDragging ? 1.1 : 1,
+        rotate: dragRotate
+      },
+      transition: {
+        y: isHovered && !isDragging ? { duration: 0.9, ease: "easeInOut", repeat: Infinity, repeatType: "mirror" } : hoverSpring,
+        scale: isHovered ? hoverSpring : cardSpring,
+        rotate: { type: "spring", stiffness: 300, damping: 25 }
+      },
       drag: draggable,
       dragSnapToOrigin: !onDragEnd,
+      dragElastic: 0.12,
+      dragMomentum: false,
+      onDragStart: () => {
+        setIsDragging(true);
+        resetTilt();
+        playSound("cardSlide1", { pitch: 0.95 + Math.random() * 0.1, volume: 0.4 });
+      },
+      onDrag: (_, info) => setDragOffsetX(info.offset.x),
       onDragEnd: handleDragEnd,
       onHoverStart: () => {
         setIsHovered(true);
         onHover?.(card, true);
-        playSound("highlight1", { pitch: 1 + Math.random() * 0.1, volume: 0.3 });
+        animate(scope.current, { rotate: [0, 5, -3, 0] }, { duration: 0.22 });
+        playSound("highlight1", { pitch: 1 + Math.random() * 0.1, volume: 0.22 });
       },
       onHoverEnd: () => {
         setIsHovered(false);
         onHover?.(card, false);
+        resetTilt();
       },
+      onMouseMove: handleMouseMove,
       onClick: handleClick,
       onDoubleClick: flip,
       "data-card-id": card.id,
@@ -361,18 +391,18 @@ function Card({
       "aria-pressed": selected,
       "aria-label": `${card.rank} of ${card.suit}`,
       children: [
-        facing === "back" ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(CardBack, { customSrc: card.back }) : card.image ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("img", { src: card.image, alt: `${card.rank} of ${card.suit}`, className: Card_default.customFace }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(
+        facing === "back" ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(CardBack, { customSrc: card.back }) : card.image ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("img", { src: card.image, alt: `${card.rank} of ${card.suit}`, className: "bc-customFace" }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(
           "div",
           {
-            className: [Card_default.face, editionClass].join(" "),
+            className: ["bc-face", editionClass].join(" "),
             style: faceStyle,
-            children: card.enhancement && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: `${Card_default.enhancement} ${enhancementClass}` })
+            children: card.enhancement && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: `bc-enhancement ${enhancementClass}` })
           }
         ),
         card.seal && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(
           "div",
           {
-            className: Card_default.seal,
+            className: "bc-seal",
             style: getSealStyle(card.seal),
             "aria-label": `${card.seal} seal`
           }
@@ -389,7 +419,6 @@ function getSealStyle(seal) {
   return {
     backgroundImage: "url(/textures/1x/Enhancers.png)",
     backgroundSize: `${ENH_COLS2 * 100}% ${ENH_ROWS2 * 100}%`,
-    // 700% 500%
     backgroundPosition: `${col / (ENH_COLS2 - 1) * 100}% ${4 / (ENH_ROWS2 - 1) * 100}%`,
     imageRendering: "pixelated"
   };
@@ -427,9 +456,6 @@ function getRowPositions(n, spacing = 80) {
   }));
 }
 
-// src/components/CardArea/CardArea.module.css
-var CardArea_default = {};
-
 // src/components/CardArea/CardArea.tsx
 var import_jsx_runtime4 = require("react/jsx-runtime");
 function CardArea({
@@ -448,17 +474,17 @@ function CardArea({
   const selectedIds = new Set(selected.map((c) => c.id));
   if (layout === "fan") {
     const positions2 = getFanPositions(cards.length, { maxAngle });
-    return /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { className: `${CardArea_default.area} ${CardArea_default.fan} ${className}`, children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(import_framer_motion2.AnimatePresence, { children: cards.map((card, i) => {
+    return /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { className: `bc-area bc-fan ${className}`, children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(import_framer_motion2.AnimatePresence, { children: cards.map((card, i) => {
       const pos = positions2[i];
       return /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
         import_framer_motion2.motion.div,
         {
-          className: CardArea_default.cardWrapper,
+          className: "bc-cardWrapper",
           style: { zIndex: pos.zIndex },
-          animate: { transform: `translateX(${pos.x}px) translateY(${pos.y}px) rotate(${pos.rotate}deg)` },
-          initial: { opacity: 0, scale: 0.8 },
-          exit: { opacity: 0, scale: 0.8 },
-          transition: { type: "spring", stiffness: 300, damping: 30 },
+          animate: { x: pos.x, y: pos.y, rotate: pos.rotate, opacity: 1, scale: 1 },
+          initial: { x: pos.x, y: pos.y + 40, rotate: pos.rotate, opacity: 0, scale: 0.5 },
+          exit: { opacity: [1, 1, 0], scale: [1.2, 0.05], y: [pos.y - 8, pos.y - 80], transition: { duration: 0.32, times: [0, 0.15, 1], ease: "easeIn" } },
+          transition: { type: "spring", stiffness: 320, damping: 28 },
           children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
             Card,
             {
@@ -481,7 +507,7 @@ function CardArea({
     return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(
       "div",
       {
-        className: `${CardArea_default.area} ${CardArea_default.pile} ${className}`,
+        className: `bc-area bc-pile ${className}`,
         onClick: () => {
           if (type === "deck" && onDraw) {
             playSound("cardSlide1", { pitch: 0.9 + Math.random() * 0.2 });
@@ -510,14 +536,14 @@ function CardArea({
     );
   }
   const positions = getRowPositions(cards.length);
-  return /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { className: `${CardArea_default.area} ${CardArea_default.row} ${className}`, children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(import_framer_motion2.AnimatePresence, { children: cards.map((card, i) => /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { className: `bc-area bc-row ${className}`, children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(import_framer_motion2.AnimatePresence, { children: cards.map((card, i) => /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
     import_framer_motion2.motion.div,
     {
-      className: CardArea_default.rowWrapper,
-      animate: { marginLeft: positions[i].x },
-      initial: { opacity: 0, scale: 0.8 },
-      exit: { opacity: 0, scale: 0.8 },
-      transition: { type: "spring", stiffness: 300, damping: 30 },
+      className: "bc-rowWrapper",
+      animate: { marginLeft: positions[i].x, opacity: 1, scale: 1, y: 0 },
+      initial: { opacity: 0, scale: 0.5, y: 40 },
+      exit: { opacity: 0, scale: 0.3, y: -60, transition: { duration: 0.22, ease: [0.4, 0, 1, 1] } },
+      transition: { type: "spring", stiffness: 320, damping: 28 },
       children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
         Card,
         {

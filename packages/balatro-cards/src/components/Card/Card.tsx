@@ -1,13 +1,13 @@
 'use client'
-import { useState, useCallback, useEffect } from 'react'
-import { motion, useAnimate } from 'framer-motion'
+import { useState, useCallback, useEffect, useRef } from 'react'
+import { motion, useAnimate, useMotionValue, animate as animateValue } from 'framer-motion'
 import type { BalatroCard } from '../../core/types'
 import { getCardFaceStyle, hasSprite } from '../../core/sprites'
 import { cardSpring, hoverSpring } from '../../animations/spring'
 import { useSound } from '../../hooks/useSound'
 import { CardBack } from '../CardBack/CardBack'
-import cardStyles from './Card.module.css'
-import effectStyles from '../../effects/effects.module.css'
+import './Card.css'
+import '../../effects/effects.css'
 
 interface CardProps {
   card: BalatroCard
@@ -34,47 +34,71 @@ export function Card({
   const [facing, setFacing] = useState<'front' | 'back'>(card.facing)
   useEffect(() => { setFacing(card.facing) }, [card.id, card.facing])
   const [isHovered, setIsHovered] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
+  const [dragOffsetX, setDragOffsetX] = useState(0)
   const { playSound } = useSound()
+  const clickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(() => () => { if (clickTimerRef.current) clearTimeout(clickTimerRef.current) }, [])
 
-  const handleClick = useCallback(async () => {
-    // Juice burst on click
-    await animate(scope.current, {
-      scale: 1.08,
-      rotate: (Math.random() > 0.5 ? 1 : -1) * 3.6,
-    }, { duration: 0.08, ease: 'easeOut' })
-    animate(scope.current, { scale: 1, rotate: 0 }, {
-      type: 'spring', stiffness: 500, damping: 25,
-    })
-    onClick?.(card)
-    playSound('highlight1', { pitch: 0.9 + Math.random() * 0.2, volume: 0.5 })
-  }, [card, onClick, animate, scope, playSound])
+  // 3D tilt MotionValues — updated directly in onMouseMove (no re-renders)
+  const tiltX = useMotionValue(0)
+  const tiltY = useMotionValue(0)
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const nx = (e.clientX - rect.left) / rect.width - 0.5   // -0.5 to +0.5
+    const ny = (e.clientY - rect.top) / rect.height - 0.5   // -0.5 to +0.5
+    tiltX.set(-ny * 24)   // rotateX: tilt up when cursor above center
+    tiltY.set(nx * 24)    // rotateY: tilt right when cursor right of center
+  }, [tiltX, tiltY])
+
+  const resetTilt = useCallback(() => {
+    animateValue(tiltX, 0, { type: 'spring', stiffness: 400, damping: 28 })
+    animateValue(tiltY, 0, { type: 'spring', stiffness: 400, damping: 28 })
+  }, [tiltX, tiltY])
+
+  const handleClick = useCallback(() => {
+    if (isDragging) return
+    if (clickTimerRef.current) clearTimeout(clickTimerRef.current)
+    clickTimerRef.current = setTimeout(async () => {
+      clickTimerRef.current = null
+      await animate(scope.current, { scale: 1.12, rotate: (Math.random() > 0.5 ? 1 : -1) * 4 }, { duration: 0.07 })
+      animate(scope.current, { scale: 1, rotate: 0 }, { type: 'spring', stiffness: 500, damping: 22 })
+      onClick?.(card)
+      playSound('highlight1', { pitch: 0.9 + Math.random() * 0.2, volume: 0.6 })
+    }, 180)
+  }, [card, onClick, animate, scope, playSound, isDragging])
 
   const flip = useCallback(async () => {
+    // Cancel pending single-click before flipping
+    if (clickTimerRef.current) {
+      clearTimeout(clickTimerRef.current)
+      clickTimerRef.current = null
+    }
     playSound('card1', { pitch: 0.9 + Math.random() * 0.2 })
-    await animate(scope.current, { scaleX: 0 }, {
-      duration: 0.1,
-      ease: [0.4, 0, 1, 1],
-    })
+    await animate(scope.current, { scaleX: 0 }, { duration: 0.1, ease: [0.4, 0, 1, 1] })
     setFacing(f => (f === 'front' ? 'back' : 'front'))
-    await animate(scope.current, { scaleX: 1 }, {
-      duration: 0.1,
-      ease: [0, 0, 0.6, 1],
-    })
+    await animate(scope.current, { scaleX: 1 }, { duration: 0.1, ease: [0, 0, 0.6, 1] })
   }, [animate, scope, playSound])
 
   const handleDragEnd = useCallback(
     (_: unknown, info: { point: { x: number; y: number } }) => {
+      setIsDragging(false)
+      setDragOffsetX(0)
       onDragEnd?.(card, info)
     },
     [card, onDragEnd]
   )
 
-  const editionClass = card.edition ? effectStyles[card.edition] : ''
-  const enhancementClass = card.enhancement ? cardStyles[card.enhancement] : ''
+  const editionClass = card.edition ? `bc-${card.edition}` : ''
+  const enhancementClass = card.enhancement ? `bc-${card.enhancement}` : ''
 
   const faceStyle = hasSprite(card.rank, card.suit)
     ? getCardFaceStyle(card.rank, card.suit)
     : {}
+
+  // Z-axis drag tilt — driven by how far the card has been dragged horizontally
+  const dragRotate = isDragging ? Math.max(-18, Math.min(18, dragOffsetX * 0.05)) : 0
 
   return (
     <motion.div
@@ -82,30 +106,56 @@ export function Card({
       layout
       layoutId={layoutId}
       className={[
-        cardStyles.card,
-        selected ? effectStyles.selected : '',
-        isHovered ? effectStyles.hovered : '',
-        card.debuffed ? effectStyles.debuffed : '',
+        'bc-card',
+        selected ? 'bc-selected' : '',
+        isHovered ? 'bc-hovered' : '',
+        card.debuffed ? 'bc-debuffed' : '',
         editionClass,
       ].join(' ')}
-      style={style}
-      animate={{
-        y: isHovered ? -14 : 0,
-        scale: selected ? 1.04 : 1,
+      style={{
+        ...style,
+        transformPerspective: 600,
+        rotateX: tiltX,
+        rotateY: tiltY,
       }}
-      transition={isHovered ? hoverSpring : cardSpring}
+      animate={{
+        y: isHovered && !isDragging
+          ? [selected ? -25 : -14, selected ? -30 : -19]
+          : selected ? -25 : 0,
+        scale: selected ? 1.15 : (isHovered && !isDragging ? 1.1 : 1),
+        rotate: dragRotate,
+      }}
+      transition={{
+        y: isHovered && !isDragging
+          ? { duration: 0.9, ease: 'easeInOut', repeat: Infinity, repeatType: 'mirror' }
+          : hoverSpring,
+        scale: isHovered ? hoverSpring : cardSpring,
+        rotate: { type: 'spring', stiffness: 300, damping: 25 },
+      }}
       drag={draggable}
       dragSnapToOrigin={!onDragEnd}
+      dragElastic={0.12}
+      dragMomentum={false}
+      onDragStart={() => {
+        setIsDragging(true)
+        resetTilt()
+        playSound('cardSlide1', { pitch: 0.95 + Math.random() * 0.1, volume: 0.4 })
+      }}
+      onDrag={(_, info) => setDragOffsetX(info.offset.x)}
       onDragEnd={handleDragEnd}
       onHoverStart={() => {
         setIsHovered(true)
         onHover?.(card, true)
-        playSound('highlight1', { pitch: 1.0 + Math.random() * 0.1, volume: 0.3 })
+        // Punch: quick 5° wobble on hover enter (same as mixandjam)
+        animate(scope.current, { rotate: [0, 5, -3, 0] }, { duration: 0.22 })
+        playSound('highlight1', { pitch: 1.0 + Math.random() * 0.1, volume: 0.22 })
       }}
       onHoverEnd={() => {
         setIsHovered(false)
         onHover?.(card, false)
+        resetTilt()
       }}
+      onMouseMove={handleMouseMove}
       onClick={handleClick}
       onDoubleClick={flip}
       data-card-id={card.id}
@@ -117,21 +167,21 @@ export function Card({
       {facing === 'back' ? (
         <CardBack customSrc={card.back} />
       ) : card.image ? (
-        <img src={card.image} alt={`${card.rank} of ${card.suit}`} className={cardStyles.customFace} />
+        <img src={card.image} alt={`${card.rank} of ${card.suit}`} className="bc-customFace" />
       ) : (
         <div
-          className={[cardStyles.face, editionClass].join(' ')}
+          className={['bc-face', editionClass].join(' ')}
           style={faceStyle}
         >
           {card.enhancement && (
-            <div className={`${cardStyles.enhancement} ${enhancementClass}`} />
+            <div className={`bc-enhancement ${enhancementClass}`} />
           )}
         </div>
       )}
 
       {card.seal && (
         <div
-          className={cardStyles.seal}
+          className="bc-seal"
           style={getSealStyle(card.seal)}
           aria-label={`${card.seal} seal`}
         />
@@ -149,7 +199,7 @@ function getSealStyle(seal: string): React.CSSProperties {
   const col = SEAL_COLS[seal] ?? 0
   return {
     backgroundImage: 'url(/textures/1x/Enhancers.png)',
-    backgroundSize: `${ENH_COLS * 100}% ${ENH_ROWS * 100}%`,  // 700% 500%
+    backgroundSize: `${ENH_COLS * 100}% ${ENH_ROWS * 100}%`,
     backgroundPosition: `${(col / (ENH_COLS - 1)) * 100}% ${(4 / (ENH_ROWS - 1)) * 100}%`,
     imageRendering: 'pixelated',
   }

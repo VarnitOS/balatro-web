@@ -1,0 +1,35 @@
+.bc-area {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.bc-fan {
+  min-height: calc(var(--card-h, 95px) + 30px);
+  min-width: 200px;
+}
+
+.bc-pile {
+  min-height: var(--card-h, 95px);
+  min-width: var(--card-w, 71px);
+  cursor: pointer;
+}
+
+.bc-row {
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.bc-cardWrapper {
+  position: absolute;
+}
+
+.bc-rowWrapper {
+  position: relative;
+}
+
+.bc-dropTarget {
+  outline: 2px dashed rgba(244, 208, 63, 0.4);
+  border-radius: 8px;
+}

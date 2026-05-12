@@ -1,0 +1,142 @@
+/* Foil: animated blue-silver shimmer, mix-blend: color-dodge
+   Ports: resources/shaders/foil.fs */
+.bc-foil {
+  position: relative;
+  overflow: hidden;
+}
+.bc-foil::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    125deg,
+    transparent 20%,
+    rgba(140, 160, 255, 0.35) 35%,
+    rgba(200, 220, 255, 0.5) 50%,
+    rgba(140, 160, 255, 0.35) 65%,
+    transparent 80%
+  );
+  background-size: 200% 200%;
+  mix-blend-mode: color-dodge;
+  pointer-events: none;
+  animation: bc-foilShimmer 3s ease-in-out infinite;
+  border-radius: inherit;
+}
+@keyframes bc-foilShimmer {
+  0%, 100% { background-position: 0% 50%; opacity: 0.6; }
+  50%       { background-position: 100% 50%; opacity: 1; }
+}
+
+/* Holo: rainbow hue-rotate overlay
+   Ports: resources/shaders/holo.fs */
+.bc-holo {
+  position: relative;
+  overflow: hidden;
+}
+.bc-holo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255,0,0,0.25),
+    rgba(255,165,0,0.25),
+    rgba(255,255,0,0.25),
+    rgba(0,255,0,0.25),
+    rgba(0,180,255,0.25),
+    rgba(160,0,255,0.25)
+  );
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  animation: bc-holoHue 4s linear infinite;
+  border-radius: inherit;
+}
+@keyframes bc-holoHue {
+  0%   { filter: hue-rotate(0deg) brightness(1); }
+  50%  { filter: hue-rotate(180deg) brightness(1.2); }
+  100% { filter: hue-rotate(360deg) brightness(1); }
+}
+
+/* Polychrome: faster hue-rotate + saturation pulse
+   Ports: resources/shaders/polychrome.fs */
+.bc-polychrome {
+  position: relative;
+  overflow: hidden;
+}
+.bc-polychrome::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    45deg,
+    rgba(255,80,180,0.4),
+    rgba(80,120,255,0.4),
+    rgba(80,255,180,0.4),
+    rgba(255,200,80,0.4)
+  );
+  background-size: 300% 300%;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  animation: bc-polychromePulse 1.5s ease-in-out infinite;
+  border-radius: inherit;
+}
+@keyframes bc-polychromePulse {
+  0%   { background-position: 0% 0%;     filter: hue-rotate(0deg) saturate(1.5); }
+  50%  { background-position: 100% 100%; filter: hue-rotate(180deg) saturate(2); }
+  100% { background-position: 0% 0%;     filter: hue-rotate(360deg) saturate(1.5); }
+}
+
+/* Negative: invert filter + dark glow
+   Ports: resources/shaders/negative.fs */
+.bc-negative {
+  filter: invert(1) hue-rotate(180deg);
+  box-shadow: 0 0 16px 4px rgba(0, 0, 0, 0.8), 0 0 8px 2px rgba(40, 0, 80, 0.6);
+}
+
+/* Debuffed: desaturate + red tint overlay */
+.bc-debuffed {
+  position: relative;
+  filter: grayscale(0.6) brightness(0.85);
+}
+.bc-debuffed::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(180, 0, 0, 0.15);
+  pointer-events: none;
+  border-radius: inherit;
+  z-index: 1;
+}
+
+/* Dissolve out: clip-path collapses to center, opacity fades */
+.bc-dissolving {
+  animation: bc-dissolveOut 0.4s ease-in forwards;
+}
+@keyframes bc-dissolveOut {
+  0%   { clip-path: inset(0% 0% 0% 0%); opacity: 1; }
+  100% { clip-path: inset(50% 50% 50% 50%); opacity: 0; }
+}
+
+/* Materialize in: reverse dissolve */
+.bc-materializing {
+  animation: bc-materializeIn 0.4s ease-out forwards;
+}
+@keyframes bc-materializeIn {
+  0%   { clip-path: inset(50% 50% 50% 50%); opacity: 0; }
+  100% { clip-path: inset(0% 0% 0% 0%); opacity: 1; }
+}
+
+/* Selected: Balatro's signature yellow selection glow */
+.bc-selected {
+  box-shadow:
+    0 0 0 2px #f4d03f,
+    0 0 12px 3px rgba(244, 208, 63, 0.7),
+    0 0 28px 6px rgba(244, 208, 63, 0.3);
+}
+
+/* Hovered: deep shadow lift */
+.bc-hovered {
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.7),
+    0 4px 12px rgba(0, 0, 0, 0.5);
+}
