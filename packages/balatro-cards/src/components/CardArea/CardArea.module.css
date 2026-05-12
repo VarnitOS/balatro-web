@@ -1,0 +1,35 @@
+.area {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.fan {
+  min-height: calc(var(--card-h, 95px) + 30px);
+  min-width: 200px;
+}
+
+.pile {
+  min-height: var(--card-h, 95px);
+  min-width: var(--card-w, 71px);
+  cursor: pointer;
+}
+
+.row {
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cardWrapper {
+  position: absolute;
+}
+
+.rowWrapper {
+  position: relative;
+}
+
+.dropTarget {
+  outline: 2px dashed rgba(244, 208, 63, 0.4);
+  border-radius: 8px;
+}
