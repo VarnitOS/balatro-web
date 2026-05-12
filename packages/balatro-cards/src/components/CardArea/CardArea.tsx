@@ -1,5 +1,5 @@
 'use client'
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import type { BalatroCard, LayoutType } from '../../core/types'
 import { getFanPositions, getRowPositions } from '../../animations/fan'
 import { useSound } from '../../hooks/useSound'
@@ -43,14 +43,14 @@ export function CardArea({
           {cards.map((card, i) => {
             const pos = positions[i]
             return (
-              <div
+              <motion.div
                 key={card.id}
                 className={styles.cardWrapper}
-                style={{
-                  transform: `translateX(${pos.x}px) translateY(${pos.y}px) rotate(${pos.rotate}deg)`,
-                  zIndex: pos.zIndex,
-                  transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                }}
+                style={{ zIndex: pos.zIndex }}
+                animate={{ transform: `translateX(${pos.x}px) translateY(${pos.y}px) rotate(${pos.rotate}deg)` }}
+                initial={{ opacity: 0, scale: 0.8 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
               >
                 <Card
                   card={card}
@@ -60,7 +60,7 @@ export function CardArea({
                   onClick={onSelect}
                   onDragEnd={onCardDragEnd}
                 />
-              </div>
+              </motion.div>
             )
           })}
         </AnimatePresence>
@@ -111,7 +111,14 @@ export function CardArea({
     <div className={`${styles.area} ${styles.row} ${className}`}>
       <AnimatePresence>
         {cards.map((card, i) => (
-          <div key={card.id} className={styles.rowWrapper} style={{ marginLeft: positions[i].x }}>
+          <motion.div
+            key={card.id}
+            className={styles.rowWrapper}
+            animate={{ marginLeft: positions[i].x }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          >
             <Card
               card={card}
               selected={selectedIds.has(card.id)}
@@ -120,7 +127,7 @@ export function CardArea({
               onClick={onSelect}
               onDragEnd={onCardDragEnd}
             />
-          </div>
+          </motion.div>
         ))}
       </AnimatePresence>
     </div>

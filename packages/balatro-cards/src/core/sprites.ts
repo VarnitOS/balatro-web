@@ -42,13 +42,16 @@ export function hasSprite(rank: string, suit: string): boolean {
   return RANK_COL[rank] !== undefined && SUIT_ROW[suit.toLowerCase()] !== undefined
 }
 
-// Card back sprite: uses Enhancers.png at position {x=2, y=0} for the red deck back
-// Enhancers atlas is a grid — back is at col=2, row=0
+// Enhancers.png atlas: 497×475 px, 7 cols × 5 rows (each sprite is 71×95 px)
+const ENH_COLS = 7
+const ENH_ROWS = 5
+
+// Card back sprite: uses Enhancers.png at position col=2, row=0 (red deck back)
 export function getCardBackStyle(): React.CSSProperties {
   return {
     backgroundImage: 'url(/textures/1x/Enhancers.png)',
-    backgroundSize: '500% 800%',    // Enhancers.png is 5 cols × 8 rows
-    backgroundPosition: '50% 0%',  // col 2 of 5 = 50%; row 0 of 8 = 0%
+    backgroundSize: `${ENH_COLS * 100}% ${ENH_ROWS * 100}%`,  // 700% 500%
+    backgroundPosition: `${(2 / (ENH_COLS - 1)) * 100}% 0%`,  // col 2 of 7
     imageRendering: 'pixelated',
   }
 }

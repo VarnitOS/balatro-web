@@ -1,5 +1,12 @@
 import type { BalatroCard, DeckConfig } from './types'
 
+function uid(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID()
+  }
+  return Math.random().toString(36).slice(2) + Date.now().toString(36)
+}
+
 const DEFAULT_RANKS = ['2','3','4','5','6','7','8','9','10','J','Q','K','A']
 const DEFAULT_SUITS = ['spades','hearts','clubs','diamonds']
 const RANK_ORDER = Object.fromEntries(DEFAULT_RANKS.map((r, i) => [r, i]))
@@ -19,7 +26,7 @@ export function createDeck(config: DeckConfig = {}): BalatroCard[] {
   for (const suit of suits) {
     for (const rank of ranks) {
       cards.push({
-        id: `${rank}-${suit}-${crypto.randomUUID()}`,
+        id: `${rank}-${suit}-${uid()}`,
         rank,
         suit,
         facing: 'back',
@@ -28,8 +35,8 @@ export function createDeck(config: DeckConfig = {}): BalatroCard[] {
   }
 
   if (config.jokers) {
-    cards.push({ id: `joker-1-${crypto.randomUUID()}`, rank: 'Joker', suit: 'none', facing: 'back' })
-    cards.push({ id: `joker-2-${crypto.randomUUID()}`, rank: 'Joker', suit: 'none', facing: 'back' })
+    cards.push({ id: `joker-1-${uid()}`, rank: 'Joker', suit: 'none', facing: 'back' })
+    cards.push({ id: `joker-2-${uid()}`, rank: 'Joker', suit: 'none', facing: 'back' })
   }
 
   return cards

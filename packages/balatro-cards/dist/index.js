@@ -42,9 +42,17 @@ var import_react2 = require("react");
 
 // src/hooks/useSound.ts
 var import_react = require("react");
-var audioContext = typeof window !== "undefined" ? new AudioContext() : null;
+var _audioContext = null;
+function getAudioContext() {
+  if (typeof window === "undefined") return null;
+  if (!_audioContext) {
+    _audioContext = new AudioContext();
+  }
+  return _audioContext;
+}
 var bufferCache = /* @__PURE__ */ new Map();
 async function loadSound(name) {
+  const audioContext = getAudioContext();
   if (!audioContext) return null;
   if (bufferCache.has(name)) return bufferCache.get(name);
   try {
@@ -64,6 +72,7 @@ function useSound(muted = false) {
   }, [muted]);
   const playSound = (0, import_react.useCallback)(
     async (name, options = {}) => {
+      const audioContext = getAudioContext();
       if (mutedRef.current || !audioContext) return;
       if (audioContext.state === "suspended") await audioContext.resume();
       const buffer = await loadSound(name);
@@ -198,13 +207,15 @@ function getCardFaceStyle(rank, suit) {
 function hasSprite(rank, suit) {
   return RANK_COL[rank] !== void 0 && SUIT_ROW[suit.toLowerCase()] !== void 0;
 }
+var ENH_COLS = 7;
+var ENH_ROWS = 5;
 function getCardBackStyle() {
   return {
     backgroundImage: "url(/textures/1x/Enhancers.png)",
-    backgroundSize: "500% 800%",
-    // Enhancers.png is 5 cols × 8 rows
-    backgroundPosition: "50% 0%",
-    // col 2 of 5 = 50%; row 0 of 8 = 0%
+    backgroundSize: `${ENH_COLS * 100}% ${ENH_ROWS * 100}%`,
+    // 700% 500%
+    backgroundPosition: `${2 / (ENH_COLS - 1) * 100}% 0%`,
+    // col 2 of 7
     imageRendering: "pixelated"
   };
 }
@@ -272,6 +283,9 @@ function Card({
 }) {
   const [scope, animate] = (0, import_framer_motion.useAnimate)();
   const [facing, setFacing] = (0, import_react3.useState)(card.facing);
+  (0, import_react3.useEffect)(() => {
+    setFacing(card.facing);
+  }, [card.id, card.facing]);
   const [isHovered, setIsHovered] = (0, import_react3.useState)(false);
   const { playSound } = useSound();
   const handleClick = (0, import_react3.useCallback)(async () => {
@@ -367,13 +381,16 @@ function Card({
     }
   );
 }
+var ENH_COLS2 = 7;
+var ENH_ROWS2 = 5;
 var SEAL_COLS = { gold: 0, red: 1, blue: 2, purple: 3 };
 function getSealStyle(seal) {
   const col = SEAL_COLS[seal] ?? 0;
   return {
     backgroundImage: "url(/textures/1x/Enhancers.png)",
-    backgroundSize: "500% 800%",
-    backgroundPosition: `${col / 4 * 100}% ${5 / 7 * 100}%`,
+    backgroundSize: `${ENH_COLS2 * 100}% ${ENH_ROWS2 * 100}%`,
+    // 700% 500%
+    backgroundPosition: `${col / (ENH_COLS2 - 1) * 100}% ${4 / (ENH_ROWS2 - 1) * 100}%`,
     imageRendering: "pixelated"
   };
 }
@@ -434,14 +451,14 @@ function CardArea({
     return /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { className: `${CardArea_default.area} ${CardArea_default.fan} ${className}`, children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(import_framer_motion2.AnimatePresence, { children: cards.map((card, i) => {
       const pos = positions2[i];
       return /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
-        "div",
+        import_framer_motion2.motion.div,
         {
           className: CardArea_default.cardWrapper,
-          style: {
-            transform: `translateX(${pos.x}px) translateY(${pos.y}px) rotate(${pos.rotate}deg)`,
-            zIndex: pos.zIndex,
-            transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)"
-          },
+          style: { zIndex: pos.zIndex },
+          animate: { transform: `translateX(${pos.x}px) translateY(${pos.y}px) rotate(${pos.rotate}deg)` },
+          initial: { opacity: 0, scale: 0.8 },
+          exit: { opacity: 0, scale: 0.8 },
+          transition: { type: "spring", stiffness: 300, damping: 30 },
           children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
             Card,
             {
@@ -493,17 +510,28 @@ function CardArea({
     );
   }
   const positions = getRowPositions(cards.length);
-  return /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { className: `${CardArea_default.area} ${CardArea_default.row} ${className}`, children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(import_framer_motion2.AnimatePresence, { children: cards.map((card, i) => /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { className: CardArea_default.rowWrapper, style: { marginLeft: positions[i].x }, children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
-    Card,
+  return /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { className: `${CardArea_default.area} ${CardArea_default.row} ${className}`, children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(import_framer_motion2.AnimatePresence, { children: cards.map((card, i) => /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+    import_framer_motion2.motion.div,
     {
-      card,
-      selected: selectedIds.has(card.id),
-      draggable,
-      layoutId: card.id,
-      onClick: onSelect,
-      onDragEnd: onCardDragEnd
-    }
-  ) }, card.id)) }) });
+      className: CardArea_default.rowWrapper,
+      animate: { marginLeft: positions[i].x },
+      initial: { opacity: 0, scale: 0.8 },
+      exit: { opacity: 0, scale: 0.8 },
+      transition: { type: "spring", stiffness: 300, damping: 30 },
+      children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+        Card,
+        {
+          card,
+          selected: selectedIds.has(card.id),
+          draggable,
+          layoutId: card.id,
+          onClick: onSelect,
+          onDragEnd: onCardDragEnd
+        }
+      )
+    },
+    card.id
+  )) }) });
 }
 
 // src/hooks/useDeck.ts
@@ -513,6 +541,12 @@ var import_react4 = require("react");
 var import_zustand = require("zustand");
 
 // src/core/deck.ts
+function uid() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return Math.random().toString(36).slice(2) + Date.now().toString(36);
+}
 var DEFAULT_RANKS = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
 var DEFAULT_SUITS = ["spades", "hearts", "clubs", "diamonds"];
 var RANK_ORDER = Object.fromEntries(DEFAULT_RANKS.map((r, i) => [r, i]));
@@ -532,7 +566,7 @@ function createDeck(config = {}) {
   for (const suit of suits) {
     for (const rank of ranks) {
       cards.push({
-        id: `${rank}-${suit}-${crypto.randomUUID()}`,
+        id: `${rank}-${suit}-${uid()}`,
         rank,
         suit,
         facing: "back"
@@ -540,8 +574,8 @@ function createDeck(config = {}) {
     }
   }
   if (config.jokers) {
-    cards.push({ id: `joker-1-${crypto.randomUUID()}`, rank: "Joker", suit: "none", facing: "back" });
-    cards.push({ id: `joker-2-${crypto.randomUUID()}`, rank: "Joker", suit: "none", facing: "back" });
+    cards.push({ id: `joker-1-${uid()}`, rank: "Joker", suit: "none", facing: "back" });
+    cards.push({ id: `joker-2-${uid()}`, rank: "Joker", suit: "none", facing: "back" });
   }
   return cards;
 }

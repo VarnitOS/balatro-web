@@ -26,12 +26,20 @@ type SoundName =
   | 'button' | 'cancel' | 'generic1' | 'ambientFire1' | 'ambientFire2'
   | 'ambientFire3' | 'ambientOrgan1' | 'introPad1'
 
-const audioContext: AudioContext | null =
-  typeof window !== 'undefined' ? new AudioContext() : null
+let _audioContext: AudioContext | null = null
+
+function getAudioContext(): AudioContext | null {
+  if (typeof window === 'undefined') return null
+  if (!_audioContext) {
+    _audioContext = new AudioContext()
+  }
+  return _audioContext
+}
 
 const bufferCache = new Map<string, AudioBuffer>()
 
 async function loadSound(name: SoundName): Promise<AudioBuffer | null> {
+  const audioContext = getAudioContext()
   if (!audioContext) return null
   if (bufferCache.has(name)) return bufferCache.get(name)!
 
@@ -52,6 +60,7 @@ export function useSound(muted = false) {
 
   const playSound = useCallback(
     async (name: SoundName, options: PlayOptions = {}) => {
+      const audioContext = getAudioContext()
       if (mutedRef.current || !audioContext) return
       if (audioContext.state === 'suspended') await audioContext.resume()
 

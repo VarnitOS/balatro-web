@@ -1,5 +1,5 @@
 'use client'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { motion, useAnimate } from 'framer-motion'
 import type { BalatroCard } from '../../core/types'
 import { getCardFaceStyle, hasSprite } from '../../core/sprites'
@@ -32,6 +32,7 @@ export function Card({
 }: CardProps) {
   const [scope, animate] = useAnimate()
   const [facing, setFacing] = useState<'front' | 'back'>(card.facing)
+  useEffect(() => { setFacing(card.facing) }, [card.id, card.facing])
   const [isHovered, setIsHovered] = useState(false)
   const { playSound } = useSound()
 
@@ -139,13 +140,17 @@ export function Card({
   )
 }
 
+// Enhancers.png atlas: 497×475 px, 7 cols × 5 rows (each sprite is 71×95 px)
+const ENH_COLS = 7
+const ENH_ROWS = 5
+
 const SEAL_COLS: Record<string, number> = { gold: 0, red: 1, blue: 2, purple: 3 }
 function getSealStyle(seal: string): React.CSSProperties {
   const col = SEAL_COLS[seal] ?? 0
   return {
     backgroundImage: 'url(/textures/1x/Enhancers.png)',
-    backgroundSize: '500% 800%',
-    backgroundPosition: `${(col / 4) * 100}% ${(5 / 7) * 100}%`,
+    backgroundSize: `${ENH_COLS * 100}% ${ENH_ROWS * 100}%`,  // 700% 500%
+    backgroundPosition: `${(col / (ENH_COLS - 1)) * 100}% ${(4 / (ENH_ROWS - 1)) * 100}%`,
     imageRendering: 'pixelated',
   }
 }
