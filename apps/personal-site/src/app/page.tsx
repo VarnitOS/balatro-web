@@ -6,64 +6,150 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { BalatroDeck, Card } from '@balatro/cards'
 import type { BalatroCard } from '@balatro/cards'
 import BalatroBackground from '@/components/BalatroBackground'
+import { CardFan } from '@/components/CardFan'
+import type { FanItem } from '@/components/CardFan'
 import styles from './page.module.css'
 
+// ── Hero card ──────────────────────────────────────────────────────────────
 const ACE_OF_SPADES: BalatroCard = {
-  id: 'ace-spades',
-  rank: 'A',
-  suit: 'spades',
-  facing: 'front',
+  id: 'ace-spades', rank: 'A', suit: 'spades', facing: 'front',
 }
 
+// ── Nav ───────────────────────────────────────────────────────────────────
 const NAV_BUTTONS = [
-  { label: 'PLAY',       bg: '#3A5DC9', shadow: '#1E3A8A', size: 'large' },
-  { label: 'EXPERIENCE', bg: '#B87822', shadow: '#7A4E0A', size: 'small' },
-  { label: 'PROJECTS',   bg: '#C03030', shadow: '#8A0A0A', size: 'small' },
-  { label: 'CONTACT',    bg: '#2A8840', shadow: '#0A5520', size: 'large' },
+  { label: 'PLAY',       bg: '#3A5DC9', shadow: '#1E3A8A', size: 'large', section: null },
+  { label: 'EXPERIENCE', bg: '#B87822', shadow: '#7A4E0A', size: 'small', section: 'experience' },
+  { label: 'PROJECTS',   bg: '#C03030', shadow: '#8A0A0A', size: 'small', section: 'projects' },
+  { label: 'BLOGS',      bg: '#7A22A8', shadow: '#4A0A7A', size: 'small', section: 'blogs' },
+  { label: 'CONTACT',    bg: '#2A8840', shadow: '#0A5520', size: 'large', section: 'contact' },
 ]
 
-const SECTIONS = ['experience', 'projects', 'contact']
+const SECTIONS = ['intro', 'experience', 'projects', 'blogs', 'contact']
+
+// ── Data ──────────────────────────────────────────────────────────────────
+interface ExperienceEntry {
+  id: string; rank: string; suit: string
+  company: string; role: string; period: string
+  description: string; stack: string[]
+}
+interface ProjectEntry {
+  id: string; rank: string; suit: string
+  title: string; description: string; slug: string
+}
+interface BlogEntry {
+  id: string; rank: string; suit: string
+  title: string; date: string; slug: string
+}
+
+const EXPERIENCE: ExperienceEntry[] = [
+  {
+    id: 'exp-1', rank: 'A', suit: 'diamonds',
+    company: 'Company A', role: 'Software Engineer Intern', period: 'Fall 2024',
+    description: 'Placeholder — describe what you built here. Focus on impact and scope.',
+    stack: ['TypeScript', 'React', 'Node.js'],
+  },
+  {
+    id: 'exp-2', rank: 'K', suit: 'diamonds',
+    company: 'Company B', role: 'Software Engineer Intern', period: 'Winter 2024',
+    description: 'Placeholder — describe what you built here. What was the hardest problem?',
+    stack: ['Python', 'PostgreSQL', 'AWS'],
+  },
+  {
+    id: 'exp-3', rank: 'Q', suit: 'diamonds',
+    company: 'Company C', role: 'Software Engineer Intern', period: 'Summer 2023',
+    description: 'Placeholder — first co-op. What did you learn? What shipped?',
+    stack: ['Java', 'Spring Boot', 'Docker'],
+  },
+]
+
+const PROJECTS: ProjectEntry[] = [
+  {
+    id: 'proj-1', rank: 'A', suit: 'clubs',
+    title: 'Balatro Web', description: 'A card game component library and portfolio, built on the Balatro engine.',
+    slug: 'balatro-web',
+  },
+  {
+    id: 'proj-2', rank: 'K', suit: 'clubs',
+    title: 'Apply Script', description: 'Automated co-op application pipeline. Less clicking, more coding.',
+    slug: 'apply-script',
+  },
+  {
+    id: 'proj-3', rank: 'Q', suit: 'clubs',
+    title: 'Coming soon...', description: 'Something new is on the table.',
+    slug: 'wip',
+  },
+]
+
+const BLOGS: BlogEntry[] = [
+  {
+    id: 'blog-1', rank: 'A', suit: 'hearts',
+    title: 'How I built this', date: '2025', slug: 'how-i-built-this',
+  },
+  {
+    id: 'blog-2', rank: 'K', suit: 'hearts',
+    title: 'Co-op survival guide', date: '2024', slug: 'coop-survival',
+  },
+]
 
 const SPRING = { type: 'spring' as const, stiffness: 220, damping: 28 }
 
+// ── Page ──────────────────────────────────────────────────────────────────
 export default function Page() {
   const [hasEnteredSite, setHasEnteredSite] = useState(false)
-  const [activeSection, setActiveSection] = useState<string>('experience')
+  const [activeSection, setActiveSection] = useState<string>('intro')
 
   useEffect(() => {
     if (!hasEnteredSite) return
-
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) setActiveSection(entry.target.id)
         }
       },
-      { threshold: 0.3, rootMargin: '-100px 0px 0px 0px' }
+      { threshold: 0.25, rootMargin: '-80px 0px 0px 0px' }
     )
-
     SECTIONS.forEach((id) => {
       const el = document.getElementById(id)
       if (el) observer.observe(el)
     })
-
     return () => observer.disconnect()
   }, [hasEnteredSite])
 
-  function handleNavClick(label: string) {
-    if (label === 'PLAY') {
-      setHasEnteredSite(prev => !prev)
-      return
-    }
-    const id = label.toLowerCase()
-    const el = document.getElementById(id)
-    if (el) el.scrollIntoView({ behavior: 'smooth' })
+  function scrollTo(id: string) {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
+  function handleNavClick(label: string) {
+    if (label === 'PLAY') { setHasEnteredSite(prev => !prev); return }
+    const btn = NAV_BUTTONS.find(b => b.label === label)
+    if (btn?.section) scrollTo(btn.section)
+  }
+
+  // ── Card fan data builders ────────────────────────────────────────────
+  const experienceFan: FanItem[] = EXPERIENCE.map((e) => ({
+    card: { id: e.id, rank: e.rank, suit: e.suit, facing: 'front' as const },
+    label: e.company,
+    onClick: (_card) => scrollTo(`exp-detail-${e.id}`),
+  }))
+
+  const projectFan: FanItem[] = PROJECTS.map((p) => ({
+    card: { id: p.id, rank: p.rank, suit: p.suit, facing: 'front' as const },
+    label: p.title,
+    // stub: onClick: (_card) => router.push(`/projects/${p.slug}`)
+    onClick: undefined,
+  }))
+
+  const blogFan: FanItem[] = BLOGS.map((b) => ({
+    card: { id: b.id, rank: b.rank, suit: b.suit, facing: 'front' as const },
+    label: b.title,
+    // stub: onClick: (_card) => router.push(`/blogs/${b.slug}`)
+    onClick: undefined,
+  }))
+
+  // ── Shared nav buttons renderer ──────────────────────────────────────
   function navButtons(compact: boolean) {
     return NAV_BUTTONS.map((btn) => {
-      const isActive = hasEnteredSite && activeSection === btn.label.toLowerCase()
-      const isPlayBtn = btn.label === 'PLAY'
+      const isActive = hasEnteredSite && btn.section && activeSection === btn.section
       return (
         <button
           key={btn.label}
@@ -79,56 +165,37 @@ export default function Page() {
             ['--btn-shadow' as string]: btn.shadow,
           }}
         >
-          {hasEnteredSite && isPlayBtn ? 'MENU' : btn.label}
+          {hasEnteredSite && btn.label === 'PLAY' ? 'MENU' : btn.label}
         </button>
       )
     })
   }
 
+  // ── Render ────────────────────────────────────────────────────────────
   return (
     <BalatroDeck sounds>
       <div className={`${styles.root} ${hasEnteredSite ? styles.rootPortfolio : ''}`}>
         <BalatroBackground
-          color1="#DE443B"
-          color2="#006BB4"
-          color3="#162325"
-          spinSpeed={7.0}
-          contrast={3.5}
-          lighting={0.4}
-          spinAmount={0.25}
-          pixelFilter={745.0}
-          mouseInteraction
+          color1="#DE443B" color2="#006BB4" color3="#162325"
+          spinSpeed={7.0} contrast={3.5} lighting={0.4}
+          spinAmount={0.25} pixelFilter={745.0} mouseInteraction
         />
 
         <div className={styles.vignette} />
         <div className={styles.version}>v1.0.0</div>
 
-        {/* ── Hero (logo + card) — exits on PLAY ── */}
+        {/* ── Hero ── */}
         <AnimatePresence initial={false}>
           {!hasEnteredSite && (
-            <motion.div
-              key="hero"
-              className={styles.hero}
-              initial={{ opacity: 0, y: -60 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -110 }}
-              transition={{ duration: 0.42, ease: [0.4, 0, 0.2, 1] }}
+            <motion.div key="hero" className={styles.hero}
+              initial={{ opacity: 0, y: -60 }} animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -110 }} transition={{ duration: 0.42, ease: [0.4, 0, 0.2, 1] }}
             >
               <div className={styles.logoWrap}>
-                <Image
-                  src="/Assets/VarnitSplashScreen.png"
-                  alt="Varnit Sahu"
-                  width={800}
-                  height={400}
-                  className={styles.logo}
-                  priority
-                />
+                <Image src="/Assets/VarnitSplashScreen.png" alt="Varnit Sahu"
+                  width={800} height={400} className={styles.logo} priority />
                 <div className={styles.cardWrap}>
-                  <div style={{
-                    ['--card-w' as string]: '205px',
-                    ['--card-h' as string]: '275px',
-                    ['--card-radius' as string]: '13px',
-                  }}>
+                  <div style={{ ['--card-w' as string]: '205px', ['--card-h' as string]: '275px', ['--card-radius' as string]: '13px' }}>
                     <Card card={ACE_OF_SPADES} ambient />
                   </div>
                 </div>
@@ -137,16 +204,12 @@ export default function Page() {
           )}
         </AnimatePresence>
 
-        {/* ── Profile badge — exits on PLAY ── */}
+        {/* ── Profile badge ── */}
         <AnimatePresence initial={false}>
           {!hasEnteredSite && (
-            <motion.div
-              key="profile"
-              className={styles.profileBadgeFixed}
-              initial={{ opacity: 0, y: -30 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -60 }}
-              transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+            <motion.div key="profile" className={styles.profileBadgeFixed}
+              initial={{ opacity: 0, y: -30 }} animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -60 }} transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
             >
               <span className={styles.profileLabel}>Profile</span>
               <span className={styles.profileId}>VS</span>
@@ -154,16 +217,12 @@ export default function Page() {
           )}
         </AnimatePresence>
 
-        {/* ── Socials — exits on PLAY ── */}
+        {/* ── Socials ── */}
         <AnimatePresence initial={false}>
           {!hasEnteredSite && (
-            <motion.div
-              key="socials"
-              className={styles.socialsFixed}
-              initial={{ opacity: 0, y: -30 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -60 }}
-              transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+            <motion.div key="socials" className={styles.socialsFixed}
+              initial={{ opacity: 0, y: -30 }} animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -60 }} transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
             >
               <div className={styles.socialRow}>
                 <a href="https://github.com/VarnitOS" className={styles.socialLink} title="GitHub" target="_blank" rel="noopener noreferrer">
@@ -184,26 +243,17 @@ export default function Page() {
           )}
         </AnimatePresence>
 
-        {/* ── Nav island — bottom in menu mode, sticky top in portfolio mode ── */}
+        {/* ── Nav island — layoutId shared element ── */}
         {!hasEnteredSite && (
           <div className={styles.navAnchorBottom}>
-            <motion.div
-              layoutId="navIsland"
-              className={styles.navButtons}
-              transition={SPRING}
-            >
+            <motion.div layoutId="navIsland" className={styles.navButtons} transition={SPRING}>
               {navButtons(false)}
             </motion.div>
           </div>
         )}
-
         {hasEnteredSite && (
           <div className={styles.stickyNavBar}>
-            <motion.div
-              layoutId="navIsland"
-              className={styles.navButtonsSticky}
-              transition={SPRING}
-            >
+            <motion.div layoutId="navIsland" className={styles.navButtonsSticky} transition={SPRING}>
               {navButtons(true)}
             </motion.div>
           </div>
@@ -212,34 +262,116 @@ export default function Page() {
         {/* ── Portfolio content ── */}
         <AnimatePresence>
           {hasEnteredSite && (
-            <motion.div
-              key="portfolio"
-              className={styles.portfolioContent}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+            <motion.div key="portfolio" className={styles.portfolioContent}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               transition={{ delay: 0.55, duration: 0.4 }}
             >
+
+              {/* ── INTRO ────────────────────────────────────────────── */}
+              <section id="intro" className={`${styles.section} ${styles.sectionIntro}`}>
+                <div className={styles.introCard}>
+                  <div className={styles.introDivider}>
+                    <span className={styles.introOrn}>✦</span>
+                  </div>
+                  <div className={styles.introBody}>
+                    <p className={styles.introName}>VARNIT SAHU</p>
+                    <p className={styles.introSub}>Computer Engineering · University of Waterloo</p>
+                    <div className={styles.introDivider} style={{ margin: '28px 0' }}>
+                      <span className={styles.introOrn}>—</span>
+                    </div>
+                    <p className={styles.introText}>
+                      Four suits.<br />
+                      Each one a round of shipped code, sharp deadlines,<br />
+                      and problems nobody warned me about.
+                    </p>
+                    <p className={styles.introText}>
+                      The hand is dealt. Scroll to see how it played.
+                    </p>
+                  </div>
+                  <div className={styles.introDivider}>
+                    <span className={styles.introOrn}>✦</span>
+                  </div>
+                </div>
+              </section>
+
+              {/* ── EXPERIENCE ────────────────────────────────────────── */}
               <section id="experience" className={styles.section}>
-                <h2 className={styles.sectionTitle}>EXPERIENCE</h2>
-                <div className={styles.sectionBody}>
-                  <p className={styles.sectionPlaceholder}>Work experience coming soon.</p>
+                <h2 className={styles.sectionTitle}>
+                  <span className={styles.suit}>♦</span> EXPERIENCE
+                </h2>
+                <p className={styles.sectionHint}>Click a card to jump to that role.</p>
+                <CardFan items={experienceFan} cardWidth={150} cardHeight={210} fanAngle={18} />
+
+                <div className={styles.expDetails}>
+                  {EXPERIENCE.map((exp, i) => (
+                    <div key={exp.id} id={`exp-detail-${exp.id}`} className={styles.expPanel}>
+                      <div className={styles.expPanelHeader}>
+                        <span className={styles.expRank}>{exp.rank}♦</span>
+                        <div>
+                          <p className={styles.expCompany}>{exp.company}</p>
+                          <p className={styles.expMeta}>{exp.role} · {exp.period}</p>
+                        </div>
+                      </div>
+                      <p className={styles.expDesc}>{exp.description}</p>
+                      <div className={styles.stackChips}>
+                        {exp.stack.map(s => <span key={s} className={styles.chip}>{s}</span>)}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </section>
 
+              {/* ── PROJECTS ─────────────────────────────────────────── */}
               <section id="projects" className={styles.section}>
-                <h2 className={styles.sectionTitle}>PROJECTS</h2>
-                <div className={styles.sectionBody}>
-                  <p className={styles.sectionPlaceholder}>Projects coming soon.</p>
+                <h2 className={styles.sectionTitle}>
+                  <span className={styles.suit}>♣</span> PROJECTS
+                </h2>
+                <p className={styles.sectionHint}>Hover to inspect. Routes to /projects/[slug] when ready.</p>
+                <CardFan items={projectFan} cardWidth={150} cardHeight={210} fanAngle={18} />
+
+                <div className={styles.cardGrid}>
+                  {PROJECTS.map((p) => (
+                    <div key={p.id} className={styles.gridCard}>
+                      <p className={styles.gridCardTitle}>{p.title}</p>
+                      <p className={styles.gridCardDesc}>{p.description}</p>
+                      <span className={styles.stub}>→ /projects/{p.slug}</span>
+                    </div>
+                  ))}
                 </div>
               </section>
 
-              <section id="contact" className={styles.section}>
-                <h2 className={styles.sectionTitle}>CONTACT</h2>
-                <div className={styles.sectionBody}>
-                  <p className={styles.sectionPlaceholder}>vsahu@uwaterloo.ca</p>
+              {/* ── BLOGS ────────────────────────────────────────────── */}
+              <section id="blogs" className={styles.section}>
+                <h2 className={styles.sectionTitle}>
+                  <span className={styles.suit}>♥</span> BLOGS
+                </h2>
+                <p className={styles.sectionHint}>Hover to inspect. Routes to /blogs/[slug] when ready.</p>
+                <CardFan items={blogFan} cardWidth={150} cardHeight={210} fanAngle={14} />
+
+                <div className={styles.cardGrid}>
+                  {BLOGS.map((b) => (
+                    <div key={b.id} className={styles.gridCard}>
+                      <p className={styles.gridCardTitle}>{b.title}</p>
+                      <p className={styles.gridCardMeta}>{b.date}</p>
+                      <span className={styles.stub}>→ /blogs/{b.slug}</span>
+                    </div>
+                  ))}
                 </div>
               </section>
+
+              {/* ── CONTACT ──────────────────────────────────────────── */}
+              <section id="contact" className={`${styles.section} ${styles.sectionContact}`}>
+                <h2 className={styles.sectionTitle}>CONTACT</h2>
+                <div className={styles.contactBox}>
+                  <p className={styles.contactLine}>vsahu@uwaterloo.ca</p>
+                  <div className={styles.contactLinks}>
+                    <a href="https://github.com/VarnitOS" className={styles.contactLink} target="_blank" rel="noopener noreferrer">GitHub</a>
+                    <span className={styles.contactSep}>·</span>
+                    <a href="https://linkedin.com/in/varnitsahu" className={styles.contactLink} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                  </div>
+                </div>
+              </section>
+
             </motion.div>
           )}
         </AnimatePresence>

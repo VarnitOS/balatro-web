@@ -1,0 +1,15 @@
+.wrap {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  margin: 0 auto;
+}
+
+/* Each card sits at its fan position, transform-origin at bottom so rotation fans naturally */
+.slot {
+  position: absolute;
+  transform-origin: bottom center;
+  cursor: pointer;
+}
