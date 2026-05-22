@@ -15,6 +15,7 @@ interface CardProps {
   draggable?: boolean
   layoutId?: string
   style?: React.CSSProperties
+  ambient?: boolean
   onHover?: (card: BalatroCard, hovering: boolean) => void
   onClick?: (card: BalatroCard) => void
   onDragEnd?: (card: BalatroCard, info: { point: { x: number; y: number } }) => void
@@ -26,6 +27,7 @@ export function Card({
   draggable = false,
   layoutId,
   style,
+  ambient = false,
   onHover,
   onClick,
   onDragEnd,
@@ -43,6 +45,31 @@ export function Card({
   // 3D tilt MotionValues — updated directly in onMouseMove (no re-renders)
   const tiltX = useMotionValue(0)
   const tiltY = useMotionValue(0)
+
+  // Ambient tilt: circular orbit of a virtual cursor, matching Balatro's ambient_tilt=0.8 on the title screen.
+  // Maths from card.lua:4379-4384 — tilt_angle = t*1.56, nx = 0.5*0.8*cos, ny = 0.5*0.8*sin
+  const ambientActiveRef = useRef(ambient)
+  const ambientTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const rafRef = useRef<number>(0)
+  const orbitStartRef = useRef(performance.now())
+
+  useEffect(() => {
+    if (!ambient) return
+    ambientActiveRef.current = true
+    orbitStartRef.current = performance.now()
+
+    const tick = (now: number) => {
+      if (ambientActiveRef.current) {
+        const t = (now - orbitStartRef.current) / 1000   // seconds
+        const angle = t * 1.56                            // 1.56 rad/s — Balatro title screen speed
+        tiltX.set(-Math.sin(angle) * 9.6)                // -0.5 * 0.8 * sin * 24°
+        tiltY.set( Math.cos(angle) * 9.6)                //  0.5 * 0.8 * cos * 24°
+      }
+      rafRef.current = requestAnimationFrame(tick)
+    }
+    rafRef.current = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(rafRef.current)
+  }, [ambient, tiltX, tiltY])
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect()
@@ -121,6 +148,8 @@ export function Card({
       animate={{
         y: isHovered && !isDragging
           ? [selected ? -25 : -14, selected ? -30 : -19]
+          : ambient && !isHovered
+          ? [-6, -14]
           : selected ? -25 : 0,
         scale: selected ? 1.15 : (isHovered && !isDragging ? 1.1 : 1),
         rotate: dragRotate,
@@ -128,6 +157,8 @@ export function Card({
       transition={{
         y: isHovered && !isDragging
           ? { duration: 0.9, ease: 'easeInOut', repeat: Infinity, repeatType: 'mirror' }
+          : ambient && !isHovered
+          ? { duration: 2.2, ease: 'easeInOut', repeat: Infinity, repeatType: 'mirror' }
           : hoverSpring,
         scale: isHovered ? hoverSpring : cardSpring,
         rotate: { type: 'spring', stiffness: 300, damping: 25 },
@@ -146,7 +177,10 @@ export function Card({
       onHoverStart={() => {
         setIsHovered(true)
         onHover?.(card, true)
-        // Punch: quick 5° wobble on hover enter (same as mixandjam)
+        if (ambient) {
+          if (ambientTimerRef.current) clearTimeout(ambientTimerRef.current)
+          ambientActiveRef.current = false
+        }
         animate(scope.current, { rotate: [0, 5, -3, 0] }, { duration: 0.22 })
         playSound('highlight1', { pitch: 1.0 + Math.random() * 0.1, volume: 0.22 })
       }}
@@ -154,6 +188,13 @@ export function Card({
         setIsHovered(false)
         onHover?.(card, false)
         resetTilt()
+        if (ambient) {
+          // Wait for the spring reset (~350 ms) then resume orbit from angle=0
+          ambientTimerRef.current = setTimeout(() => {
+            orbitStartRef.current = performance.now()
+            ambientActiveRef.current = true
+          }, 400)
+        }
       }}
       onMouseMove={handleMouseMove}
       onClick={handleClick}

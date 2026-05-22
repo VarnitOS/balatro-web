@@ -47,6 +47,7 @@ interface CardProps {
     draggable?: boolean;
     layoutId?: string;
     style?: React.CSSProperties;
+    ambient?: boolean;
     onHover?: (card: BalatroCard, hovering: boolean) => void;
     onClick?: (card: BalatroCard) => void;
     onDragEnd?: (card: BalatroCard, info: {
@@ -56,7 +57,7 @@ interface CardProps {
         };
     }) => void;
 }
-declare function Card({ card, selected, draggable, layoutId, style, onHover, onClick, onDragEnd, }: CardProps): react_jsx_runtime.JSX.Element;
+declare function Card({ card, selected, draggable, layoutId, style, ambient, onHover, onClick, onDragEnd, }: CardProps): react_jsx_runtime.JSX.Element;
 
 interface CardAreaProps {
     cards: BalatroCard[];

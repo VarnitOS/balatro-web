@@ -124,7 +124,7 @@
   padding: 10px 12px;
   display: flex;
   gap: 14px;
-  align-items: center;
+  align-items: flex-end;
   box-shadow: 0 6px 0 #2e3d40, 0 8px 0 rgba(0, 0, 0, 0.65);
 }
 
@@ -157,6 +157,30 @@
 
 .navBtn:active {
   transform: translateY(6px);
+  box-shadow:
+    0 1px 0 var(--btn-shadow),
+    0 2px 0 rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Middle-two smaller buttons — matching Balatro's OPTIONS/QUIT sizing */
+.navBtnSmall {
+  font-size: 24px;
+  padding: 9px 34px 13px;
+  box-shadow:
+    0 5px 0 var(--btn-shadow),
+    0 7px 0 rgba(0, 0, 0, 0.9),
+    inset 0 1px 0 rgba(255, 255, 255, 0.32);
+}
+
+.navBtnSmall:hover {
+  box-shadow:
+    0 7px 0 var(--btn-shadow),
+    0 10px 0 rgba(0, 0, 0, 0.9),
+    inset 0 1px 0 rgba(255, 255, 255, 0.38);
+}
+
+.navBtnSmall:active {
   box-shadow:
     0 1px 0 var(--btn-shadow),
     0 2px 0 rgba(0, 0, 0, 0.7),

@@ -14,10 +14,10 @@ const ACE_OF_SPADES: BalatroCard = {
 }
 
 const NAV_BUTTONS = [
-  { label: 'ABOUT',    bg: '#3A5DC9', shadow: '#1E3A8A' },
-  { label: 'PROJECTS', bg: '#B87822', shadow: '#7A4E0A' },
-  { label: 'CONTACT',  bg: '#C03030', shadow: '#8A0A0A' },
-  { label: 'RESUME',   bg: '#2A8840', shadow: '#0A5520' },
+  { label: 'PLAY',       bg: '#3A5DC9', shadow: '#1E3A8A', size: 'large' },
+  { label: 'EXPERIENCE', bg: '#B87822', shadow: '#7A4E0A', size: 'small' },
+  { label: 'PROJECTS',   bg: '#C03030', shadow: '#8A0A0A', size: 'small' },
+  { label: 'CONTACT',    bg: '#2A8840', shadow: '#0A5520', size: 'large' },
 ]
 
 export default function Page() {
@@ -79,7 +79,7 @@ export default function Page() {
             {NAV_BUTTONS.map(btn => (
               <button
                 key={btn.label}
-                className={styles.navBtn}
+                className={`${styles.navBtn} ${btn.size === 'small' ? styles.navBtnSmall : ''}`}
                 style={{
                   ['--btn-bg' as string]: btn.bg,
                   ['--btn-shadow' as string]: btn.shadow,

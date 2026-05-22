@@ -229,6 +229,7 @@ function Card({
   draggable = false,
   layoutId,
   style,
+  ambient = false,
   onHover,
   onClick,
   onDragEnd
@@ -248,6 +249,26 @@ function Card({
   }, []);
   const tiltX = useMotionValue(0);
   const tiltY = useMotionValue(0);
+  const ambientActiveRef = useRef2(ambient);
+  const ambientTimerRef = useRef2(null);
+  const rafRef = useRef2(0);
+  const orbitStartRef = useRef2(performance.now());
+  useEffect3(() => {
+    if (!ambient) return;
+    ambientActiveRef.current = true;
+    orbitStartRef.current = performance.now();
+    const tick = (now) => {
+      if (ambientActiveRef.current) {
+        const t = (now - orbitStartRef.current) / 1e3;
+        const angle = t * 1.56;
+        tiltX.set(-Math.sin(angle) * 9.6);
+        tiltY.set(Math.cos(angle) * 9.6);
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [ambient, tiltX, tiltY]);
   const handleMouseMove = useCallback2((e) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const nx = (e.clientX - rect.left) / rect.width - 0.5;
@@ -312,12 +333,12 @@ function Card({
         rotateY: tiltY
       },
       animate: {
-        y: isHovered && !isDragging ? [selected ? -25 : -14, selected ? -30 : -19] : selected ? -25 : 0,
+        y: isHovered && !isDragging ? [selected ? -25 : -14, selected ? -30 : -19] : ambient && !isHovered ? [-6, -14] : selected ? -25 : 0,
         scale: selected ? 1.15 : isHovered && !isDragging ? 1.1 : 1,
         rotate: dragRotate
       },
       transition: {
-        y: isHovered && !isDragging ? { duration: 0.9, ease: "easeInOut", repeat: Infinity, repeatType: "mirror" } : hoverSpring,
+        y: isHovered && !isDragging ? { duration: 0.9, ease: "easeInOut", repeat: Infinity, repeatType: "mirror" } : ambient && !isHovered ? { duration: 2.2, ease: "easeInOut", repeat: Infinity, repeatType: "mirror" } : hoverSpring,
         scale: isHovered ? hoverSpring : cardSpring,
         rotate: { type: "spring", stiffness: 300, damping: 25 }
       },
@@ -335,6 +356,10 @@ function Card({
       onHoverStart: () => {
         setIsHovered(true);
         onHover?.(card, true);
+        if (ambient) {
+          if (ambientTimerRef.current) clearTimeout(ambientTimerRef.current);
+          ambientActiveRef.current = false;
+        }
         animate(scope.current, { rotate: [0, 5, -3, 0] }, { duration: 0.22 });
         playSound("highlight1", { pitch: 1 + Math.random() * 0.1, volume: 0.22 });
       },
@@ -342,6 +367,12 @@ function Card({
         setIsHovered(false);
         onHover?.(card, false);
         resetTilt();
+        if (ambient) {
+          ambientTimerRef.current = setTimeout(() => {
+            orbitStartRef.current = performance.now();
+            ambientActiveRef.current = true;
+          }, 400);
+        }
       },
       onMouseMove: handleMouseMove,
       onClick: handleClick,

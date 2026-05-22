@@ -4,6 +4,7 @@
   "packageManager": "pnpm@10.25.0",
   "scripts": {
     "dev": "pnpm --filter website dev",
+    "dev:site": "pnpm --filter personal-site dev",
     "build": "pnpm --filter @balatro/cards build",
     "test": "pnpm --filter @balatro/cards test"
   }
