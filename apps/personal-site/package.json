@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@balatro/cards": "workspace:*",
+    "framer-motion": "^11.18.2",
     "next": "14.2.0",
     "ogl": "^1.0.11",
     "react": "^18",
