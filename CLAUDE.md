@@ -72,15 +72,23 @@ Built with tsup. Source in `src/`, output in `dist/`. Tests use vitest + happy-d
 
 ## personal-site architecture
 
-`apps/personal-site/src/app/page.tsx` — single client component, no routing.
+`apps/personal-site/src/app/page.tsx` — single client component, no routing. Two modes driven by one boolean, `hasEnteredSite`:
 
-**Layer stack** (z-index order):
+- **Landing mode** (default): hero logo + ambient card, profile badge, socials, and the nav island all rendered via `AnimatePresence`/`motion.div` with their own enter/exit transitions.
+- **Portfolio mode** (after clicking PLAY): hero/profile/socials exit; a scrolling page of `<section>`s (`intro`, `experience`, `projects`, `blogs`, `contact`) fades in inside `.portfolioContent`. An `IntersectionObserver` (threshold 0.25) tracks which section is in view and highlights the matching nav button.
+- The nav buttons island itself never unmounts between modes — it uses a shared `layoutId="navIsland"` (framer-motion) so it physically animates from the bottom-center anchor (landing) to the sticky top bar (`.stickyNavBar`, portfolio), and PLAY relabels to MENU.
+
+**Layer stack** (z-index order), landing mode:
 1. `BalatroBackground` (z=0) — OGL WebGL canvas with a custom GLSL fragment shader. Props: `color1/2/3`, `spinSpeed`, `contrast`, `lighting`, `spinAmount`, `pixelFilter`, `mouseInteraction`. Shader is self-contained in `BalatroBackground.tsx`.
 2. `.vignette` div (z=1) — radial-gradient + bottom fade, `pointer-events: none`
 3. Hero area (z=2) — centered logo image + ambient `Card` overlaid in the logo gap
 4. Bottom chrome (z=10) — three islands: profile badge (left), nav buttons (center), socials + email (right)
 
-**Nav button sizing** — outer buttons (PLAY, CONTACT) are full-size; middle buttons (EXPERIENCE, PROJECTS) use `.navBtnSmall` for shorter padding and smaller font, matching Balatro's OPTIONS/QUIT layout. Container uses `align-items: flex-end` so all buttons share a common bottom edge.
+**Nav button sizing** — outer buttons (PLAY, CONTACT) are full-size; middle buttons (EXPERIENCE, PROJECTS, BLOGS) use `.navBtnSmall` for shorter padding and smaller font, matching Balatro's OPTIONS/QUIT layout. Container uses `align-items: flex-end` so all buttons share a common bottom edge.
+
+**`CardFan`** (`src/components/CardFan.tsx`) — personal-site-local component, not part of `@balatro/cards`. Wraps the package's `Card` + `getFanPositions` to animate a hand of cards into a fanned arc with staggered spring entrances; used to display EXPERIENCE/PROJECTS/BLOGS as card hands. Takes `items: FanItem[]` (`{ card, label, onClick }`) plus `cardWidth`/`cardHeight`/`fanAngle`.
+
+**Content data** — `EXPERIENCE`, `PROJECTS`, `BLOGS` arrays at the top of `page.tsx` are hardcoded placeholders (company/role/description text is explicitly stub copy). Each entry pairs portfolio content with a playing-card rank+suit for its `CardFan` slot. There's no CMS or data file — edit these arrays directly.
 
 **Styling**: CSS Modules (`page.module.css`) + global reset/font (`globals.css`). No Tailwind. Button colors use CSS custom properties `--btn-bg` / `--btn-shadow` set inline per button.
 
@@ -89,5 +97,5 @@ Built with tsup. Source in `src/`, output in `dist/`. Tests use vitest + happy-d
 **Assets** in `apps/personal-site/public/`:
 - `Assets/VarnitSplashScreen.png` — hero logo image
 - `sounds/` — `.ogg` files (copied from `packages/balatro-cards/public/sounds/`)
-- `textures/1x/` — `8BitDeck.png`, `Enhancers.png` sprite atlases
+- `textures/1x/`, `textures/2x/` — full Balatro texture dump (Jokers, Tarots, Vouchers, collabs, etc.); only `8BitDeck.png` and `Enhancers.png` are actually wired up via `sprites.ts` in the package — the rest are unused
 - `fonts/m6x11plus.ttf`
