@@ -8,6 +8,7 @@ import type { BalatroCard } from '@balatro/cards'
 import BalatroBackground from '@/components/BalatroBackground'
 import { CardFan } from '@/components/CardFan'
 import type { FanItem } from '@/components/CardFan'
+import { useScrollToEnter } from '@/hooks/useScrollToEnter'
 import styles from './page.module.css'
 
 // ── Hero card ──────────────────────────────────────────────────────────────
@@ -98,6 +99,8 @@ export default function Page() {
   const [hasEnteredSite, setHasEnteredSite] = useState(false)
   const [activeSection, setActiveSection] = useState<string>('intro')
 
+  useScrollToEnter(!hasEnteredSite, () => setHasEnteredSite(true))
+
   useEffect(() => {
     if (!hasEnteredSite) return
     const observer = new IntersectionObserver(
@@ -159,6 +162,7 @@ export default function Page() {
             btn.size === 'small' ? styles.navBtnSmall : '',
             compact ? styles.navBtnCompact : '',
             isActive ? styles.navBtnActive : '',
+            btn.label === 'PLAY' && !compact ? styles.navBtnPulse : '',
           ].join(' ')}
           style={{
             ['--btn-bg' as string]: btn.bg,
