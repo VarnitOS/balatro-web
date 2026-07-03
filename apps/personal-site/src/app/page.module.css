@@ -281,6 +281,39 @@
   transform: translateY(-2px);
 }
 
+.navBtnPulse {
+  animation: navBtnPulse 1.5s ease-in-out infinite;
+}
+
+.navBtnPulse:hover,
+.navBtnPulse:active {
+  animation-play-state: paused;
+}
+
+@keyframes navBtnPulse {
+  0%, 100% {
+    box-shadow:
+      0 7px 0 var(--btn-shadow),
+      0 10px 0 rgba(0, 0, 0, 0.9),
+      inset 0 1px 0 rgba(255, 255, 255, 0.32),
+      0 0 0 rgba(255, 255, 255, 0);
+  }
+  50% {
+    box-shadow:
+      0 7px 0 var(--btn-shadow),
+      0 10px 0 rgba(0, 0, 0, 0.9),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5),
+      0 0 20px 8px color-mix(in srgb, var(--btn-bg) 65%, white),
+      0 0 60px 22px var(--btn-bg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navBtnPulse {
+    animation: none;
+  }
+}
+
 /* ── Portfolio content wrapper ── */
 .portfolioContent {
   position: relative;
@@ -456,22 +489,6 @@
   color: rgba(255, 255, 255, 0.75);
   margin: 0 0 16px;
   line-height: 1.8;
-}
-
-.stackChips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.chip {
-  font-family: 'm6x11plus', monospace;
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.75);
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 6px;
-  padding: 3px 10px 5px;
 }
 
 /* ── PROJECTS / BLOGS card grid ── */
