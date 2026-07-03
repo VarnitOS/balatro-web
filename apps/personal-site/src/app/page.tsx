@@ -30,8 +30,8 @@ const SECTIONS = ['intro', 'experience', 'projects', 'blogs', 'contact']
 // ── Data ──────────────────────────────────────────────────────────────────
 interface ExperienceEntry {
   id: string; rank: string; suit: string
-  company: string; role: string; period: string
-  description: string; stack: string[]
+  company: string; role: string
+  description: string
 }
 interface ProjectEntry {
   id: string; rank: string; suit: string
@@ -45,21 +45,33 @@ interface BlogEntry {
 const EXPERIENCE: ExperienceEntry[] = [
   {
     id: 'exp-1', rank: 'A', suit: 'diamonds',
-    company: 'Company A', role: 'Software Engineer Intern', period: 'Fall 2024',
-    description: 'Placeholder — describe what you built here. Focus on impact and scope.',
-    stack: ['TypeScript', 'React', 'Node.js'],
+    company: 'PlayStation (Sony)', role: 'Software Engineering Intern',
+    description: 'PlayStation Store & Checkout team — digital commerce for 129M+ monthly users.',
   },
   {
     id: 'exp-2', rank: 'K', suit: 'diamonds',
-    company: 'Company B', role: 'Software Engineer Intern', period: 'Winter 2024',
-    description: 'Placeholder — describe what you built here. What was the hardest problem?',
-    stack: ['Python', 'PostgreSQL', 'AWS'],
+    company: 'Nokia', role: 'Software Developer (Co-op)',
+    description: 'NetGuard Cybersecurity Dome — automated cloud provisioning & agent orchestration.',
   },
   {
     id: 'exp-3', rank: 'Q', suit: 'diamonds',
-    company: 'Company C', role: 'Software Engineer Intern', period: 'Summer 2023',
-    description: 'Placeholder — first co-op. What did you learn? What shipped?',
-    stack: ['Java', 'Spring Boot', 'Docker'],
+    company: 'University of Waterloo', role: 'Undergraduate Researcher',
+    description: 'Deep learning validation tooling & the QuackIR IR toolkit.',
+  },
+  {
+    id: 'exp-4', rank: 'J', suit: 'diamonds',
+    company: 'Nokia', role: 'AI/ML Engineering Intern',
+    description: 'Autonomous Networks — closed-loop control plane for self-healing networks.',
+  },
+  {
+    id: 'exp-5', rank: '10', suit: 'diamonds',
+    company: 'Savi Finance', role: 'Software Engineer Intern',
+    description: 'Investment-planning platform helping young investors save on fees.',
+  },
+  {
+    id: 'exp-6', rank: '9', suit: 'diamonds',
+    company: 'WAT.ai', role: 'Machine Learning Engineer',
+    description: 'Drilling-regime anomaly detection with unsupervised ML.',
   },
 ]
 
@@ -313,13 +325,10 @@ export default function Page() {
                         <span className={styles.expRank}>{exp.rank}♦</span>
                         <div>
                           <p className={styles.expCompany}>{exp.company}</p>
-                          <p className={styles.expMeta}>{exp.role} · {exp.period}</p>
+                          <p className={styles.expMeta}>{exp.role}</p>
                         </div>
                       </div>
                       <p className={styles.expDesc}>{exp.description}</p>
-                      <div className={styles.stackChips}>
-                        {exp.stack.map(s => <span key={s} className={styles.chip}>{s}</span>)}
-                      </div>
                     </div>
                   ))}
                 </div>
