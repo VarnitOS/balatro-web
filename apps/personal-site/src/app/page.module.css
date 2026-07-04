@@ -18,7 +18,7 @@
   top: 10px;
   right: 14px;
   z-index: 20;
-  font-size: 13px;
+  font-size: 32px;
   color: rgba(255, 255, 255, 0.55);
   letter-spacing: 0.5px;
 }
@@ -134,8 +134,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 56px;
-  height: 56px;
+  width: 68px;
+  height: 68px;
   background: #2a2a2a;
   border-radius: 9px;
   color: rgba(255, 255, 255, 0.88);
@@ -153,12 +153,12 @@
 .langIsland {
   background: #4f6367;
   border-radius: 9px;
-  padding: 6px 14px 8px;
-  box-shadow: 0 4px 0 #2e3d40, 0 6px 0 rgba(0, 0, 0, 0.55);
+  padding: 12px 22px 14px;
+  box-shadow: 0 5px 0 #2e3d40, 0 7px 0 rgba(0, 0, 0, 0.55);
 }
 
 .langBadge {
-  font-size: 12px;
+  font-size: 16px;
   color: rgba(255, 255, 255, 0.88);
   letter-spacing: 0.3px;
   white-space: nowrap;
@@ -445,7 +445,7 @@
 
 .aboutBullet {
   font-family: 'm6x11plus', monospace;
-  font-size: 17px;
+  font-size: 19px;
   color: rgba(255, 255, 255, 0.85);
   line-height: 1.6;
   margin: 0;
@@ -461,12 +461,12 @@
 
 .aboutRoleDash {
   color: rgba(255, 255, 255, 0.45);
-  font-size: 15px;
+  font-size: 16px;
 }
 
 .aboutSubBullet {
   font-family: 'm6x11plus', monospace;
-  font-size: 15px;
+  font-size: 17px;
   color: rgba(255, 255, 255, 0.68);
   line-height: 1.6;
   margin: 0 0 0 28px;
@@ -478,10 +478,10 @@
 
 .aboutSubRole {
   font-family: 'm6x11plus', monospace;
-  font-size: 13px;
+  font-size: 14px;
   color: rgba(255, 255, 255, 0.35);
   letter-spacing: 0.2px;
-  width: 76px;
+  width: 84px;
   flex-shrink: 0;
 }
 
@@ -515,6 +515,7 @@
   padding: 0 0 1px;
   cursor: pointer;
   letter-spacing: inherit;
+  text-decoration: none;
   transition: color 0.15s, border-color 0.15s;
   display: inline-flex;
   align-items: center;
