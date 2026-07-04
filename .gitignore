@@ -12,3 +12,4 @@ npm-debug.log
 .turbo
 .DS_Store
 next-env.d.ts
+.vercel
