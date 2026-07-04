@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import type { ReactNode } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { BalatroDeck, Card } from '@balatro/cards'
@@ -31,7 +32,7 @@ const SECTIONS = ['intro', 'experience', 'projects', 'blogs', 'contact']
 interface ExperienceEntry {
   id: string; rank: string; suit: string
   company: string; role: string
-  description: string
+  logo: string; highlight: string
 }
 interface ProjectEntry {
   id: string; rank: string; suit: string
@@ -46,32 +47,38 @@ const EXPERIENCE: ExperienceEntry[] = [
   {
     id: 'exp-1', rank: 'A', suit: 'diamonds',
     company: 'PlayStation (Sony)', role: 'Software Engineering Intern',
-    description: 'PlayStation Store & Checkout team — digital commerce for 129M+ monthly users.',
+    logo: '/logos/playstation.svg',
+    highlight: 'Optimizing digital checkout & commerce for **129M+** monthly active users',
   },
   {
     id: 'exp-2', rank: 'K', suit: 'diamonds',
     company: 'Nokia', role: 'Software Developer (Co-op)',
-    description: 'NetGuard Cybersecurity Dome — automated cloud provisioning & agent orchestration.',
+    logo: '/logos/nokia.svg',
+    highlight: 'Cut infra provisioning time **from 2 weeks to 3 hours** automating Terraform on GCP',
   },
   {
     id: 'exp-3', rank: 'Q', suit: 'diamonds',
     company: 'University of Waterloo', role: 'Undergraduate Researcher',
-    description: 'Deep learning validation tooling & the QuackIR IR toolkit.',
+    logo: '/logos/uwaterloo.svg',
+    highlight: 'Built PyTorch vs ONNX validation framework for deep learning model deployment',
   },
   {
     id: 'exp-4', rank: 'J', suit: 'diamonds',
     company: 'Nokia', role: 'AI/ML Engineering Intern',
-    description: 'Autonomous Networks — closed-loop control plane for self-healing networks.',
+    logo: '/logos/nokia.svg',
+    highlight: 'Architected a closed-loop control plane supporting **10K+** concurrent network ops',
   },
   {
     id: 'exp-5', rank: '10', suit: 'diamonds',
     company: 'Savi Finance', role: 'Software Engineer Intern',
-    description: 'Investment-planning platform helping young investors save on fees.',
+    logo: '/logos/savi-finance.svg',
+    highlight: 'Shipped GraphQL microservices to **1,000+** weekly active users',
   },
   {
     id: 'exp-6', rank: '9', suit: 'diamonds',
     company: 'WAT.ai', role: 'Machine Learning Engineer',
-    description: 'Drilling-regime anomaly detection with unsupervised ML.',
+    logo: '/logos/wat-ai.svg',
+    highlight: 'Cut anomaly-detection false positives by **27%** with unsupervised ML',
   },
 ]
 
@@ -105,6 +112,12 @@ const BLOGS: BlogEntry[] = [
 ]
 
 const SPRING = { type: 'spring' as const, stiffness: 220, damping: 28 }
+
+function renderBold(text: string): ReactNode[] {
+  return text.split(/\*\*(.+?)\*\*/g).map((part, i) =>
+    i % 2 === 1 ? <strong key={i}>{part}</strong> : part
+  )
+}
 
 // ── Page ──────────────────────────────────────────────────────────────────
 export default function Page() {
@@ -318,17 +331,17 @@ export default function Page() {
                 <p className={styles.sectionHint}>Click a card to jump to that role.</p>
                 <CardFan items={experienceFan} cardWidth={150} cardHeight={210} fanAngle={18} />
 
-                <div className={styles.expDetails}>
-                  {EXPERIENCE.map((exp, i) => (
-                    <div key={exp.id} id={`exp-detail-${exp.id}`} className={styles.expPanel}>
-                      <div className={styles.expPanelHeader}>
-                        <span className={styles.expRank}>{exp.rank}♦</span>
-                        <div>
-                          <p className={styles.expCompany}>{exp.company}</p>
-                          <p className={styles.expMeta}>{exp.role}</p>
-                        </div>
-                      </div>
-                      <p className={styles.expDesc}>{exp.description}</p>
+                <div className={styles.expGrid}>
+                  {EXPERIENCE.map((exp) => (
+                    <div key={exp.id} id={`exp-detail-${exp.id}`} className={styles.expLogoCard}>
+                      <img
+                        src={exp.logo}
+                        alt={`${exp.company} logo`}
+                        className={styles.expLogo}
+                        onError={(e) => { e.currentTarget.style.display = 'none' }}
+                      />
+                      <p className={styles.expCardRole}>{exp.role}</p>
+                      <p className={styles.expCardCompany}>{exp.company}</p>
                     </div>
                   ))}
                 </div>

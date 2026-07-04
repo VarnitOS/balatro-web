@@ -434,68 +434,53 @@
 }
 
 /* ── EXPERIENCE section ── */
-.expDetails {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+.expGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
   width: 100%;
   max-width: 780px;
   margin-top: 32px;
 }
 
-.expPanel {
+.expLogoCard {
   background: rgba(0, 0, 0, 0.55);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 14px;
-  padding: 28px 32px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   scroll-margin-top: 100px;
   box-shadow: 0 6px 32px rgba(0, 0, 0, 0.5);
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, transform 0.1s;
 }
 
-.expPanel:hover {
+.expLogoCard:hover {
   border-color: rgba(184, 120, 34, 0.4);
+  transform: translateY(-2px);
 }
 
-.expPanelHeader {
-  display: flex;
-  align-items: flex-start;
-  gap: 20px;
-  margin-bottom: 16px;
+.expLogo {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
 }
 
-.expRank {
+.expCardRole {
   font-family: 'm6x11plus', monospace;
-  font-size: 28px;
-  color: #c9912a;
-  text-shadow: 0 2px 0 rgba(0,0,0,0.8);
-  line-height: 1;
-  flex-shrink: 0;
-  padding-top: 2px;
-}
-
-.expCompany {
-  font-family: 'm6x11plus', monospace;
-  font-size: 26px;
+  font-size: 18px;
   color: #fff;
   margin: 0;
-  letter-spacing: 1px;
-}
-
-.expMeta {
-  font-family: 'm6x11plus', monospace;
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.5);
-  margin: 4px 0 0;
   letter-spacing: 0.5px;
 }
 
-.expDesc {
+.expCardCompany {
   font-family: 'm6x11plus', monospace;
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.75);
-  margin: 0 0 16px;
-  line-height: 1.8;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+  letter-spacing: 0.5px;
 }
 
 /* ── PROJECTS / BLOGS card grid ── */
@@ -622,4 +607,5 @@
   .introText { font-size: 15px; }
   .contactBox { padding: 32px 24px; }
   .cardGrid { grid-template-columns: 1fr; }
+  .expGrid { grid-template-columns: 1fr; }
 }
