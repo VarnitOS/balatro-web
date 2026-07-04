@@ -1,0 +1,84 @@
+.viewer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Controls bar ── */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 0 18px;
+}
+
+.zoomBtn {
+  font-family: 'm6x11plus', monospace;
+  font-size: 20px;
+  line-height: 1;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 7px;
+  padding: 4px 13px 7px;
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s;
+  user-select: none;
+}
+
+.zoomBtn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.zoomBtn:active {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.zoomLabel {
+  font-family: 'm6x11plus', monospace;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.55);
+  min-width: 46px;
+  text-align: center;
+}
+
+.pageLabel {
+  font-family: 'm6x11plus', monospace;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.32);
+  margin-left: auto;
+  letter-spacing: 0.5px;
+}
+
+/* ── Pages ── */
+.pages {
+  display: flex !important;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #2a5a3a transparent;
+}
+
+.pageWrap {
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.4),
+    0 8px 32px rgba(0, 0, 0, 0.35);
+  border-radius: 3px;
+  overflow: hidden;
+  line-height: 0;
+  flex-shrink: 0;
+}
+
+/* ── Loading / error ── */
+.status {
+  font-family: 'm6x11plus', monospace;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.35);
+  text-align: center;
+  padding: 48px 0;
+  margin: 0;
+  width: 100%;
+}

@@ -1,7 +1,10 @@
 'use client'
 import { useState } from 'react'
+import dynamic from 'next/dynamic'
 import { motion } from 'framer-motion'
 import styles from './blog-viewer.module.css'
+
+const PDFViewer = dynamic(() => import('./PDFViewer'), { ssr: false })
 
 function renderPara(text: string, key: number) {
   const parts: React.ReactNode[] = []
@@ -26,6 +29,7 @@ export interface BlogPost {
   tags?: string[]
   content?: string
   images?: { src: string; caption?: string }[]
+  pdf?: string
 }
 
 interface Props {
@@ -86,12 +90,14 @@ export default function BlogViewer({ posts, initialId, onClose }: Props) {
           </div>
           <div className={styles.docDivider} />
           <div className={styles.docBody}>
-            {paragraphs.length > 0 ? (
+            {active.pdf ? (
+              <PDFViewer url={active.pdf} />
+            ) : paragraphs.length > 0 ? (
               paragraphs.map((para, i) => renderPara(para, i))
             ) : (
               <p className={styles.docEmpty}>This entry is coming soon... ♥</p>
             )}
-            {active.images?.map((img, i) => (
+            {!active.pdf && active.images?.map((img, i) => (
               <figure key={i} className={styles.docFigure}>
                 <img src={img.src} alt={img.caption ?? ''} className={styles.docImg} />
                 {img.caption && <figcaption className={styles.docCaption}>{img.caption}</figcaption>}

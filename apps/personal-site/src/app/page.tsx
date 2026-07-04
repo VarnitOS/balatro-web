@@ -46,6 +46,7 @@ interface BlogEntry {
   tags?: string[]
   content?: string
   images?: { src: string; caption?: string }[]
+  pdf?: string
 }
 
 const EXPERIENCE: ExperienceEntry[] = [
@@ -150,6 +151,11 @@ const PROJECTS: ProjectEntry[] = [
 ]
 
 const BLOGS: BlogEntry[] = [
+  {
+    id: 'blog-2', rank: 'K', suit: 'hearts',
+    title: 'Bellman Optimality Equation', date: '2025', slug: 'bellman-optimality-equation',
+    pdf: '/blogs/GameTheory.pdf',
+  },
   {
     id: 'blog-1', rank: 'A', suit: 'hearts',
     title: 'How I built this', date: '2025', slug: 'how-i-built-this',
