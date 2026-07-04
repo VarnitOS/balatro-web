@@ -460,10 +460,21 @@
   margin-right: 6px;
 }
 
-.aboutCompany {
+.aboutCompanyLink {
+  font-family: 'm6x11plus', monospace;
+  font-size: inherit;
   font-weight: bold;
-  text-decoration: underline;
   color: #fff;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  letter-spacing: inherit;
+  transition: color 0.15s;
+}
+
+.aboutCompanyLink:hover {
+  color: #c9912a;
 }
 
 /* ── EXPERIENCE section ── */

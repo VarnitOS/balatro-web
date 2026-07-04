@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import type { ReactNode } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { BalatroDeck, Card } from '@balatro/cards'
@@ -32,7 +31,7 @@ const SECTIONS = ['intro', 'experience', 'projects', 'blogs', 'contact']
 interface ExperienceEntry {
   id: string; rank: string; suit: string
   company: string; role: string
-  logo: string; highlight: string
+  logo: string
 }
 interface ProjectEntry {
   id: string; rank: string; suit: string
@@ -48,37 +47,31 @@ const EXPERIENCE: ExperienceEntry[] = [
     id: 'exp-1', rank: 'A', suit: 'diamonds',
     company: 'PlayStation (Sony)', role: 'Software Engineering Intern',
     logo: '/logos/playstation.svg',
-    highlight: 'Optimizing digital checkout & commerce for **129M+** monthly active users',
   },
   {
     id: 'exp-2', rank: 'K', suit: 'diamonds',
     company: 'Nokia', role: 'Software Developer (Co-op)',
     logo: '/logos/nokia.svg',
-    highlight: 'Cut infra provisioning time **from 2 weeks to 3 hours** automating Terraform on GCP',
   },
   {
     id: 'exp-3', rank: 'Q', suit: 'diamonds',
     company: 'University of Waterloo', role: 'Undergraduate Researcher',
     logo: '/logos/uwaterloo.svg',
-    highlight: 'Built PyTorch vs ONNX validation framework for deep learning model deployment',
   },
   {
     id: 'exp-4', rank: 'J', suit: 'diamonds',
     company: 'Nokia', role: 'AI/ML Engineering Intern',
     logo: '/logos/nokia.svg',
-    highlight: 'Architected a closed-loop control plane supporting **10K+** concurrent network ops',
   },
   {
     id: 'exp-5', rank: '10', suit: 'diamonds',
     company: 'Savi Finance', role: 'Software Engineer Intern',
     logo: '/logos/savi-finance.svg',
-    highlight: 'Shipped GraphQL microservices to **1,000+** weekly active users',
   },
   {
     id: 'exp-6', rank: '9', suit: 'diamonds',
     company: 'WAT.ai', role: 'Machine Learning Engineer',
     logo: '/logos/wat-ai.svg',
-    highlight: 'Cut anomaly-detection false positives by **27%** with unsupervised ML',
   },
 ]
 
@@ -112,12 +105,6 @@ const BLOGS: BlogEntry[] = [
 ]
 
 const SPRING = { type: 'spring' as const, stiffness: 220, damping: 28 }
-
-function renderBold(text: string): ReactNode[] {
-  return text.split(/\*\*(.+?)\*\*/g).map((part, i) =>
-    i % 2 === 1 ? <strong key={i}>{part}</strong> : part
-  )
-}
 
 // ── Page ──────────────────────────────────────────────────────────────────
 export default function Page() {
@@ -311,11 +298,9 @@ export default function Page() {
                     <div className={styles.aboutBullets}>
                       <p className={styles.aboutBullet}>
                         <span className={styles.aboutBulletIcon}>◆</span>
-                        Currently: {EXPERIENCE[0].role} — <span className={styles.aboutCompany}>{EXPERIENCE[0].company}</span>
-                      </p>
-                      <p className={styles.aboutSubBullet}>
-                        <span className={styles.aboutSubBulletIcon}>↳</span>
-                        {renderBold(EXPERIENCE[0].highlight)}
+                        Currently:{' '}
+                        <button className={styles.aboutCompanyLink} onClick={() => scrollTo('experience')}>{EXPERIENCE[0].company}</button>
+                        {' '}— {EXPERIENCE[0].role}
                       </p>
                       <p className={styles.aboutBullet}>
                         <span className={styles.aboutBulletIcon}>◆</span>
@@ -324,7 +309,9 @@ export default function Page() {
                       {EXPERIENCE.slice(1).map((exp) => (
                         <p key={exp.id} className={styles.aboutSubBullet}>
                           <span className={styles.aboutSubBulletIcon}>↳</span>
-                          {' '}<span className={styles.aboutCompany}>{exp.company}</span> — {exp.role}: {renderBold(exp.highlight)}
+                          {' '}
+                          <button className={styles.aboutCompanyLink} onClick={() => scrollTo('experience')}>{exp.company}</button>
+                          {' '}— {exp.role}
                         </p>
                       ))}
                     </div>
