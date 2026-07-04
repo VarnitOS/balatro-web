@@ -433,6 +433,23 @@
   color: rgba(255, 255, 255, 0.55);
   letter-spacing: 1px;
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.introBlurb {
+  font-family: 'm6x11plus', monospace;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.60);
+  letter-spacing: 0.3px;
+  margin: 12px 0 0;
+  line-height: 1.6;
+  max-width: 520px;
+}
+
+.introBlurb strong {
+  color: rgba(255, 255, 255, 0.88);
 }
 
 .aboutBullets {
@@ -598,11 +615,65 @@
   gap: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   transition: border-color 0.2s, transform 0.1s;
+  text-decoration: none;
+  color: inherit;
 }
 
 .gridCard:hover {
   border-color: rgba(255, 255, 255, 0.18);
   transform: translateY(-2px);
+}
+
+.gridCardGithub {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'm6x11plus', monospace;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.38);
+  margin-top: auto;
+  padding-top: 6px;
+  transition: color 0.15s;
+}
+
+.gridCard:hover .gridCardGithub {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.gridCardClickable {
+  cursor: pointer;
+  border: none;
+  text-align: left;
+}
+
+.gridCardTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 2px;
+}
+
+.gridCardTag {
+  font-family: 'm6x11plus', monospace;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 2px 7px 3px;
+}
+
+.gridCardRead {
+  font-family: 'm6x11plus', monospace;
+  font-size: 13px;
+  color: rgba(199, 57, 42, 0.6);
+  margin-top: auto;
+  padding-top: 6px;
+  transition: color 0.15s;
+}
+
+.gridCard:hover .gridCardRead {
+  color: #e74c3c;
 }
 
 .gridCardTitle {
