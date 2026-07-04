@@ -9,6 +9,7 @@ import BalatroBackground from '@/components/BalatroBackground'
 import { CardFan } from '@/components/CardFan'
 import type { FanItem } from '@/components/CardFan'
 import { useScrollToEnter } from '@/hooks/useScrollToEnter'
+import { useBackgroundMusic } from '@/hooks/useBackgroundMusic'
 import styles from './page.module.css'
 
 // ── Hero card ──────────────────────────────────────────────────────────────
@@ -111,6 +112,8 @@ export default function Page() {
   const [hasEnteredSite, setHasEnteredSite] = useState(false)
   const [activeSection, setActiveSection] = useState<string>('intro')
 
+  const { play: playMusic } = useBackgroundMusic('/music/theme.mp4')
+
   useScrollToEnter(!hasEnteredSite, () => setHasEnteredSite(true))
 
   useEffect(() => {
@@ -135,7 +138,7 @@ export default function Page() {
   }
 
   function handleNavClick(label: string) {
-    if (label === 'PLAY') { setHasEnteredSite(prev => !prev); return }
+    if (label === 'PLAY') { playMusic(); setHasEnteredSite(prev => !prev); return }
     const btn = NAV_BUTTONS.find(b => b.label === label)
     if (btn?.section) scrollTo(btn.section)
   }

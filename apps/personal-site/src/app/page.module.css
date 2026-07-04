@@ -9,6 +9,7 @@
 .rootPortfolio {
   overflow-y: auto;
   scroll-behavior: smooth;
+  overscroll-behavior: none;
 }
 
 /* ── Version string ── */
@@ -196,12 +197,23 @@
 .navButtonsSticky {
   background: #4f6367;
   border-radius: 12px;
-  padding: 8px 10px;
+  padding: 8px 10px 14px;
   display: flex;
   gap: 8px;
   align-items: center;
   pointer-events: auto;
-  box-shadow: 0 6px 0 #2e3d40, 0 8px 0 rgba(0, 0, 0, 0.65), 0 12px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 6px 0 #2e3d40, 0 8px 0 rgba(0, 0, 0, 0.65);
+}
+
+/* suppress dark outer shadows inside sticky panel so the panel bottom stays clean */
+.navButtonsSticky .navBtn {
+  box-shadow: 0 5px 0 var(--btn-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.32);
+}
+.navButtonsSticky .navBtn:hover {
+  box-shadow: 0 7px 0 var(--btn-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.38);
+}
+.navButtonsSticky .navBtn:active {
+  box-shadow: 0 1px 0 var(--btn-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 /* ── Nav buttons ── */
@@ -322,6 +334,8 @@
     rgba(6, 12, 18, 0.72) 86%,
     transparent 100%
   );
+  mask-image: linear-gradient(to bottom, transparent 0px, black 56px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0px, black 56px);
 }
 
 /* ── Shared section base ── */
