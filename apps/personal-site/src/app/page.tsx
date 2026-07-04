@@ -32,7 +32,8 @@ const SECTIONS = ['intro', 'experience', 'projects', 'blogs', 'contact']
 interface ExperienceEntry {
   id: string; rank: string; suit: string
   company: string; role: string
-  logo: string
+  shortRole: string
+  domain: string
 }
 interface ProjectEntry {
   id: string; rank: string; suit: string
@@ -47,32 +48,32 @@ const EXPERIENCE: ExperienceEntry[] = [
   {
     id: 'exp-1', rank: 'A', suit: 'diamonds',
     company: 'PlayStation (Sony)', role: 'Software Engineering Intern',
-    logo: '/logos/playstation.svg',
+    shortRole: 'Engineering', domain: 'playstation.com',
   },
   {
     id: 'exp-2', rank: 'K', suit: 'diamonds',
     company: 'Nokia', role: 'Software Developer (Co-op)',
-    logo: '/logos/nokia.svg',
+    shortRole: 'Engineering', domain: 'nokia.com',
   },
   {
     id: 'exp-3', rank: 'Q', suit: 'diamonds',
     company: 'University of Waterloo', role: 'Undergraduate Researcher',
-    logo: '/logos/uwaterloo.svg',
+    shortRole: 'Research', domain: 'uwaterloo.ca',
   },
   {
     id: 'exp-4', rank: 'J', suit: 'diamonds',
     company: 'Nokia', role: 'AI/ML Engineering Intern',
-    logo: '/logos/nokia.svg',
+    shortRole: 'ML Eng', domain: 'nokia.com',
   },
   {
     id: 'exp-5', rank: '10', suit: 'diamonds',
     company: 'Savi Finance', role: 'Software Engineer Intern',
-    logo: '/logos/savi-finance.svg',
+    shortRole: 'Engineering', domain: 'savi.finance',
   },
   {
     id: 'exp-6', rank: '9', suit: 'diamonds',
     company: 'WAT.ai', role: 'Machine Learning Engineer',
-    logo: '/logos/wat-ai.svg',
+    shortRole: 'ML Eng', domain: 'wat.ai',
   },
 ]
 
@@ -299,23 +300,34 @@ export default function Page() {
                       <span className={styles.introOrn}>—</span>
                     </div>
                     <div className={styles.aboutBullets}>
-                      <p className={styles.aboutBullet}>
+                      <div className={styles.aboutBullet}>
                         <span className={styles.aboutBulletIcon}>◆</span>
-                        Currently:{' '}
-                        <button className={styles.aboutCompanyLink} onClick={() => scrollTo('experience')}>{EXPERIENCE[0].company}</button>
-                        {' '}— {EXPERIENCE[0].role}
-                      </p>
-                      <p className={styles.aboutBullet}>
+                        <span className={styles.aboutBulletLabel}>Currently:</span>
+                        <button className={styles.aboutCompanyLink} onClick={() => scrollTo('experience')}>
+                          <img
+                            src={`https://www.google.com/s2/favicons?domain=${EXPERIENCE[0].domain}&sz=64`}
+                            alt="" width={18} height={18} className={styles.companyLogo}
+                          />
+                          {EXPERIENCE[0].company}
+                        </button>
+                        <span className={styles.aboutRoleDash}>— {EXPERIENCE[0].role}</span>
+                      </div>
+                      <div className={styles.aboutBullet}>
                         <span className={styles.aboutBulletIcon}>◆</span>
-                        Previously:
-                      </p>
+                        <span className={styles.aboutBulletLabel}>Previously:</span>
+                      </div>
                       {EXPERIENCE.slice(1).map((exp) => (
-                        <p key={exp.id} className={styles.aboutSubBullet}>
+                        <div key={exp.id} className={styles.aboutSubBullet}>
                           <span className={styles.aboutSubBulletIcon}>↳</span>
-                          {' '}
-                          <button className={styles.aboutCompanyLink} onClick={() => scrollTo('experience')}>{exp.company}</button>
-                          {' '}— {exp.role}
-                        </p>
+                          <span className={styles.aboutSubRole}>{exp.shortRole}</span>
+                          <button className={styles.aboutCompanyLink} onClick={() => scrollTo('experience')}>
+                            <img
+                              src={`https://www.google.com/s2/favicons?domain=${exp.domain}&sz=64`}
+                              alt="" width={18} height={18} className={styles.companyLogo}
+                            />
+                            {exp.company}
+                          </button>
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -337,7 +349,7 @@ export default function Page() {
                   {EXPERIENCE.map((exp) => (
                     <div key={exp.id} id={`exp-detail-${exp.id}`} className={styles.expLogoCard}>
                       <img
-                        src={exp.logo}
+                        src={`https://www.google.com/s2/favicons?domain=${exp.domain}&sz=64`}
                         alt={`${exp.company} logo`}
                         className={styles.expLogo}
                         onError={(e) => { e.currentTarget.style.display = 'none' }}
