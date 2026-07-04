@@ -424,13 +424,46 @@
   margin: 0;
 }
 
-.introText {
+.aboutBullets {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.aboutBullet {
   font-family: 'm6x11plus', monospace;
-  font-size: 18px;
-  color: rgba(255, 255, 255, 0.82);
-  line-height: 1.9;
+  font-size: 17px;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.6;
   margin: 0;
   letter-spacing: 0.3px;
+}
+
+.aboutSubBullet {
+  font-family: 'm6x11plus', monospace;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.68);
+  line-height: 1.6;
+  margin: 0 0 0 28px;
+  letter-spacing: 0.2px;
+}
+
+.aboutBulletIcon {
+  color: #c9912a;
+  margin-right: 8px;
+}
+
+.aboutSubBulletIcon {
+  color: rgba(255, 255, 255, 0.4);
+  margin-right: 6px;
+}
+
+.aboutCompany {
+  font-weight: bold;
+  text-decoration: underline;
+  color: #fff;
 }
 
 /* ── EXPERIENCE section ── */
@@ -604,7 +637,8 @@
   .section { padding: 60px 20px 80px; }
   .sectionTitle { font-size: 30px; }
   .introName { font-size: 28px; }
-  .introText { font-size: 15px; }
+  .aboutBullet { font-size: 14px; }
+  .aboutSubBullet { font-size: 13px; }
   .contactBox { padding: 32px 24px; }
   .cardGrid { grid-template-columns: 1fr; }
   .expGrid { grid-template-columns: 1fr; }

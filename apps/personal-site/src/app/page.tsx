@@ -308,14 +308,30 @@ export default function Page() {
                     <div className={styles.introDivider} style={{ margin: '28px 0' }}>
                       <span className={styles.introOrn}>—</span>
                     </div>
-                    <p className={styles.introText}>
-                      Four suits.<br />
-                      Each one a round of shipped code, sharp deadlines,<br />
-                      and problems nobody warned me about.
-                    </p>
-                    <p className={styles.introText}>
-                      The hand is dealt. Scroll to see how it played.
-                    </p>
+                    <div className={styles.aboutBullets}>
+                      <p className={styles.aboutBullet}>
+                        <span className={styles.aboutBulletIcon}>◆</span>
+                        Computer Science, AI Specialization — University of Waterloo
+                      </p>
+                      <p className={styles.aboutBullet}>
+                        <span className={styles.aboutBulletIcon}>◆</span>
+                        Currently: {EXPERIENCE[0].role} — <span className={styles.aboutCompany}>{EXPERIENCE[0].company}</span>
+                      </p>
+                      <p className={styles.aboutSubBullet}>
+                        <span className={styles.aboutSubBulletIcon}>↳</span>
+                        {renderBold(EXPERIENCE[0].highlight)}
+                      </p>
+                      <p className={styles.aboutBullet}>
+                        <span className={styles.aboutBulletIcon}>◆</span>
+                        Previously:
+                      </p>
+                      {EXPERIENCE.slice(1).map((exp) => (
+                        <p key={exp.id} className={styles.aboutSubBullet}>
+                          <span className={styles.aboutSubBulletIcon}>↳</span>
+                          {' '}<span className={styles.aboutCompany}>{exp.company}</span> — {exp.role}: {renderBold(exp.highlight)}
+                        </p>
+                      ))}
+                    </div>
                   </div>
                   <div className={styles.introDivider}>
                     <span className={styles.introOrn}>✦</span>
