@@ -304,15 +304,11 @@ export default function Page() {
                   </div>
                   <div className={styles.introBody}>
                     <p className={styles.introName}>VARNIT SAHU</p>
-                    <p className={styles.introSub}>Computer Engineering · University of Waterloo</p>
+                    <p className={styles.introSub}>Computer Science, AI Specialization · University of Waterloo</p>
                     <div className={styles.introDivider} style={{ margin: '28px 0' }}>
                       <span className={styles.introOrn}>—</span>
                     </div>
                     <div className={styles.aboutBullets}>
-                      <p className={styles.aboutBullet}>
-                        <span className={styles.aboutBulletIcon}>◆</span>
-                        Computer Science, AI Specialization — University of Waterloo
-                      </p>
                       <p className={styles.aboutBullet}>
                         <span className={styles.aboutBulletIcon}>◆</span>
                         Currently: {EXPERIENCE[0].role} — <span className={styles.aboutCompany}>{EXPERIENCE[0].company}</span>
