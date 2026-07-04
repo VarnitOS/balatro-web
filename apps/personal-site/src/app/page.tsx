@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import type { ReactNode } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { BalatroDeck, Card } from '@balatro/cards'
@@ -9,7 +8,9 @@ import type { BalatroCard } from '@balatro/cards'
 import BalatroBackground from '@/components/BalatroBackground'
 import { CardFan } from '@/components/CardFan'
 import type { FanItem } from '@/components/CardFan'
+import BlogViewer from '@/components/BlogViewer'
 import { useScrollToEnter } from '@/hooks/useScrollToEnter'
+import { useBackgroundMusic } from '@/hooks/useBackgroundMusic'
 import styles from './page.module.css'
 
 // ── Hero card ──────────────────────────────────────────────────────────────
@@ -32,7 +33,8 @@ const SECTIONS = ['intro', 'experience', 'projects', 'blogs', 'contact']
 interface ExperienceEntry {
   id: string; rank: string; suit: string
   company: string; role: string
-  logo: string; highlight: string
+  shortRole: string
+  domain: string
 }
 interface ProjectEntry {
   id: string; rank: string; suit: string
@@ -41,62 +43,109 @@ interface ProjectEntry {
 interface BlogEntry {
   id: string; rank: string; suit: string
   title: string; date: string; slug: string
+  tags?: string[]
+  content?: string
+  images?: { src: string; caption?: string }[]
 }
 
 const EXPERIENCE: ExperienceEntry[] = [
   {
     id: 'exp-1', rank: 'A', suit: 'diamonds',
     company: 'PlayStation (Sony)', role: 'Software Engineering Intern',
-    logo: '/logos/playstation.svg',
-    highlight: 'Optimizing digital checkout & commerce for **129M+** monthly active users',
+    shortRole: 'Engineering', domain: 'playstation.com',
   },
   {
     id: 'exp-2', rank: 'K', suit: 'diamonds',
     company: 'Nokia', role: 'Software Developer (Co-op)',
-    logo: '/logos/nokia.svg',
-    highlight: 'Cut infra provisioning time **from 2 weeks to 3 hours** automating Terraform on GCP',
+    shortRole: 'Engineering', domain: 'nokia.com',
   },
   {
     id: 'exp-3', rank: 'Q', suit: 'diamonds',
     company: 'University of Waterloo', role: 'Undergraduate Researcher',
-    logo: '/logos/uwaterloo.svg',
-    highlight: 'Built PyTorch vs ONNX validation framework for deep learning model deployment',
+    shortRole: 'Research', domain: 'uwaterloo.ca',
   },
   {
     id: 'exp-4', rank: 'J', suit: 'diamonds',
     company: 'Nokia', role: 'AI/ML Engineering Intern',
-    logo: '/logos/nokia.svg',
-    highlight: 'Architected a closed-loop control plane supporting **10K+** concurrent network ops',
+    shortRole: 'ML Eng', domain: 'nokia.com',
   },
   {
     id: 'exp-5', rank: '10', suit: 'diamonds',
     company: 'Savi Finance', role: 'Software Engineer Intern',
-    logo: '/logos/savi-finance.svg',
-    highlight: 'Shipped GraphQL microservices to **1,000+** weekly active users',
+    shortRole: 'Engineering', domain: 'financesavi.com',
   },
   {
     id: 'exp-6', rank: '9', suit: 'diamonds',
     company: 'WAT.ai', role: 'Machine Learning Engineer',
-    logo: '/logos/wat-ai.svg',
-    highlight: 'Cut anomaly-detection false positives by **27%** with unsupervised ML',
+    shortRole: 'ML Eng', domain: 'watai.ca',
   },
 ]
 
 const PROJECTS: ProjectEntry[] = [
   {
     id: 'proj-1', rank: 'A', suit: 'clubs',
-    title: 'Balatro Web', description: 'A card game component library and portfolio, built on the Balatro engine.',
-    slug: 'balatro-web',
+    title: 'DataBridge', description: 'A SaaS solution for overworked interns within auditing, bridging data gaps between legacy systems and modern reporting.',
+    slug: 'DataBridge',
   },
   {
     id: 'proj-2', rank: 'K', suit: 'clubs',
-    title: 'Apply Script', description: 'Automated co-op application pipeline. Less clicking, more coding.',
-    slug: 'apply-script',
+    title: 'NetVigil', description: 'A comprehensive network monitoring and security tool that provides real-time insights into network performance and potential security threats.',
+    slug: 'NetVigil',
   },
   {
     id: 'proj-3', rank: 'Q', suit: 'clubs',
-    title: 'Coming soon...', description: 'Something new is on the table.',
-    slug: 'wip',
+    title: 'Law-Der', description: 'An AI-powered legal document analysis and recommendation system for legal professionals.',
+    slug: 'Law-Der',
+  },
+  {
+    id: 'proj-4', rank: 'J', suit: 'clubs',
+    title: 'OneScroll', description: 'A modern social media aggregator that unifies all your social feeds into one seamless scrolling experience. Stop app-hopping and start enjoying your content in one place.',
+    slug: 'OneScroll',
+  },
+  {
+    id: 'proj-5', rank: '10', suit: 'clubs',
+    title: 'AdOpt', description: 'A sophisticated real-time bidding (RTB) optimization platform that uses game theory principles to optimize advertising campaigns and maximize ROI.',
+    slug: 'AdOpt',
+  },
+  {
+    id: 'proj-6', rank: '9', suit: 'clubs',
+    title: 'FluxStonks', description: 'A real-time stock market analysis and trading platform with advanced visualization and prediction capabilities.',
+    slug: 'FluxStonks',
+  },
+  {
+    id: 'proj-7', rank: '8', suit: 'clubs',
+    title: 'DisasterFirstResponder', description: 'An emergency response coordination platform designed to help first responders during natural disasters and crisis situations.',
+    slug: 'DisasterFirstResponder',
+  },
+  {
+    id: 'proj-8', rank: '7', suit: 'clubs',
+    title: 'Joblity', description: 'A job search and career mobility platform that helps users find opportunities aligned with their skills and career goals.',
+    slug: 'Joblity',
+  },
+  {
+    id: 'proj-9', rank: '6', suit: 'clubs',
+    title: 'MealPlanner', description: 'A smart meal planning application that creates personalized meal plans based on dietary preferences, restrictions, and nutritional goals.',
+    slug: 'mealplanner',
+  },
+  {
+    id: 'proj-10', rank: '5', suit: 'clubs',
+    title: 'MNIST Classifier', description: 'A deep learning model for handwritten digit recognition using the MNIST dataset, with interactive visualization of network operations.',
+    slug: 'MNIST',
+  },
+  {
+    id: 'proj-11', rank: '4', suit: 'clubs',
+    title: 'TravelCompanion', description: 'An all-in-one travel planning and companion app that helps with itinerary planning, booking, and real-time travel assistance.',
+    slug: 'TravelCompanion',
+  },
+  {
+    id: 'proj-12', rank: '3', suit: 'clubs',
+    title: 'CardClassifier', description: 'A machine learning model that classifies playing cards from images using convolutional neural networks.',
+    slug: 'CardClassifier',
+  },
+  {
+    id: 'proj-13', rank: '2', suit: 'clubs',
+    title: 'Options Probability', description: 'Derives implied probability distributions from options market data to visualize the market\'s expectations for future price movements.',
+    slug: 'options-impplied-probablity-dristribution-of-market',
   },
 ]
 
@@ -104,25 +153,31 @@ const BLOGS: BlogEntry[] = [
   {
     id: 'blog-1', rank: 'A', suit: 'hearts',
     title: 'How I built this', date: '2025', slug: 'how-i-built-this',
-  },
-  {
-    id: 'blog-2', rank: 'K', suit: 'hearts',
-    title: 'Co-op survival guide', date: '2024', slug: 'coop-survival',
+    content: `I spent way too long on this.
+
+That's basically the whole story. I got deep into [Balatro](https://store.steampowered.com/app/2379780/Balatro/) during a co-op term and couldn't shake the UI: the chunky pixel font, the card slap sounds, the way every button has that little 3D press to it. At some point I thought: why does every portfolio look like a dark-mode LinkedIn page? Can we not do something fun?
+
+So I built this instead of applying to jobs like a normal person.
+
+The card components live in their own @balatro/cards package so I can actually reuse them. Framer Motion does most of the heavy lifting on animations. The nav island that physically flies from the bottom of the landing screen to the sticky top bar is just layoutId doing its thing, and I find it unreasonably satisfying every single time.
+
+The swirling red-blue background is a custom GLSL fragment shader running on a raw OGL canvas. I watched a lot of shader tutorials to build it and still only understand about 40% of how it actually works. That feels fine.
+
+The font is m6x11plus. It's free, it's pixel-perfect, and I will use it in everything forever.
+
+If you haven't played [Balatro](https://store.steampowered.com/app/2379780/Balatro/), close this tab and go do that first. Seriously. It'll steal your weekend. It definitely stole mine.`,
   },
 ]
 
 const SPRING = { type: 'spring' as const, stiffness: 220, damping: 28 }
 
-function renderBold(text: string): ReactNode[] {
-  return text.split(/\*\*(.+?)\*\*/g).map((part, i) =>
-    i % 2 === 1 ? <strong key={i}>{part}</strong> : part
-  )
-}
-
 // ── Page ──────────────────────────────────────────────────────────────────
 export default function Page() {
   const [hasEnteredSite, setHasEnteredSite] = useState(false)
   const [activeSection, setActiveSection] = useState<string>('intro')
+  const [activeBlog, setActiveBlog] = useState<string | null>(null)
+
+  const { play: playMusic } = useBackgroundMusic('/music/theme.mp4')
 
   useScrollToEnter(!hasEnteredSite, () => setHasEnteredSite(true))
 
@@ -148,9 +203,16 @@ export default function Page() {
   }
 
   function handleNavClick(label: string) {
-    if (label === 'PLAY') { setHasEnteredSite(prev => !prev); return }
+    if (label === 'PLAY') { playMusic(); setHasEnteredSite(prev => !prev); return }
     const btn = NAV_BUTTONS.find(b => b.label === label)
-    if (btn?.section) scrollTo(btn.section)
+    if (!btn?.section) return
+    if (!hasEnteredSite) {
+      playMusic()
+      setHasEnteredSite(true)
+      setTimeout(() => scrollTo(btn.section!), 400)
+    } else {
+      scrollTo(btn.section)
+    }
   }
 
   // ── Card fan data builders ────────────────────────────────────────────
@@ -255,12 +317,12 @@ export default function Page() {
             >
               <div className={styles.socialRow}>
                 <a href="https://github.com/VarnitOS" className={styles.socialLink} title="GitHub" target="_blank" rel="noopener noreferrer">
-                  <svg viewBox="0 0 16 16" fill="currentColor" width="26" height="26" aria-hidden="true">
+                  <svg viewBox="0 0 16 16" fill="currentColor" width="32" height="32" aria-hidden="true">
                     <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
                   </svg>
                 </a>
                 <a href="https://linkedin.com/in/varnitsahu" className={styles.socialLink} title="LinkedIn" target="_blank" rel="noopener noreferrer">
-                  <svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32" aria-hidden="true">
                     <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                   </svg>
                 </a>
@@ -304,28 +366,42 @@ export default function Page() {
                   </div>
                   <div className={styles.introBody}>
                     <p className={styles.introName}>VARNIT SAHU</p>
-                    <p className={styles.introSub}>Computer Science, AI Specialization · University of Waterloo</p>
-                    <div className={styles.introDivider} style={{ margin: '28px 0' }}>
-                      <span className={styles.introOrn}>—</span>
-                    </div>
-                    <div className={styles.aboutBullets}>
-                      <p className={styles.aboutBullet}>
+                    <p className={styles.introSub}>
+                      <img src="https://www.google.com/s2/favicons?domain=uwaterloo.ca&sz=64" alt="UW" width={18} height={18} className={styles.companyLogo} />
+                      Computer Science, Artificial Intelligence Specialization, Statistics Minor · University of Waterloo
+                    </p>
+                    <p className={styles.introBlurb}>
+                      Co-founding <strong>IPAiC</strong>, an AI copilot for Infection Prevention and Control teams investigating healthcare-associated infections (25+ customer interviews, $1K in non-dilutive funding from Velocity)
+                    </p>
+                    <div className={styles.aboutBullets} style={{ marginTop: '28px' }}>
+                      <div className={styles.aboutBullet}>
                         <span className={styles.aboutBulletIcon}>◆</span>
-                        Currently: {EXPERIENCE[0].role} — <span className={styles.aboutCompany}>{EXPERIENCE[0].company}</span>
-                      </p>
-                      <p className={styles.aboutSubBullet}>
-                        <span className={styles.aboutSubBulletIcon}>↳</span>
-                        {renderBold(EXPERIENCE[0].highlight)}
-                      </p>
-                      <p className={styles.aboutBullet}>
+                        <span className={styles.aboutBulletLabel}>Currently:</span>
+                        <a className={styles.aboutCompanyLink} href={`https://${EXPERIENCE[0].domain}`} target="_blank" rel="noopener noreferrer">
+                          <img
+                            src={`https://www.google.com/s2/favicons?domain=${EXPERIENCE[0].domain}&sz=64`}
+                            alt="" width={18} height={18} className={styles.companyLogo}
+                          />
+                          {EXPERIENCE[0].company}
+                        </a>
+                        <span className={styles.aboutRoleDash}>· {EXPERIENCE[0].role}</span>
+                      </div>
+                      <div className={styles.aboutBullet}>
                         <span className={styles.aboutBulletIcon}>◆</span>
-                        Previously:
-                      </p>
+                        <span className={styles.aboutBulletLabel}>Previously:</span>
+                      </div>
                       {EXPERIENCE.slice(1).map((exp) => (
-                        <p key={exp.id} className={styles.aboutSubBullet}>
+                        <div key={exp.id} className={styles.aboutSubBullet}>
                           <span className={styles.aboutSubBulletIcon}>↳</span>
-                          {' '}<span className={styles.aboutCompany}>{exp.company}</span> — {exp.role}: {renderBold(exp.highlight)}
-                        </p>
+                          <a className={styles.aboutCompanyLink} href={`https://${exp.domain}`} target="_blank" rel="noopener noreferrer">
+                            <img
+                              src={`https://www.google.com/s2/favicons?domain=${exp.domain}&sz=64`}
+                              alt="" width={18} height={18} className={styles.companyLogo}
+                            />
+                            {exp.company}
+                          </a>
+                          <span className={styles.aboutRoleDash}>· {exp.role}</span>
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -347,7 +423,7 @@ export default function Page() {
                   {EXPERIENCE.map((exp) => (
                     <div key={exp.id} id={`exp-detail-${exp.id}`} className={styles.expLogoCard}>
                       <img
-                        src={exp.logo}
+                        src={`https://www.google.com/s2/favicons?domain=${exp.domain}&sz=64`}
                         alt={`${exp.company} logo`}
                         className={styles.expLogo}
                         onError={(e) => { e.currentTarget.style.display = 'none' }}
@@ -369,11 +445,14 @@ export default function Page() {
 
                 <div className={styles.cardGrid}>
                   {PROJECTS.map((p) => (
-                    <div key={p.id} className={styles.gridCard}>
+                    <a key={p.id} className={styles.gridCard} href={`https://github.com/VarnitOS/${p.slug}`} target="_blank" rel="noopener noreferrer">
                       <p className={styles.gridCardTitle}>{p.title}</p>
                       <p className={styles.gridCardDesc}>{p.description}</p>
-                      <span className={styles.stub}>→ /projects/{p.slug}</span>
-                    </div>
+                      <span className={styles.gridCardGithub}>
+                        <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                        View on GitHub
+                      </span>
+                    </a>
                   ))}
                 </div>
               </section>
@@ -388,11 +467,16 @@ export default function Page() {
 
                 <div className={styles.cardGrid}>
                   {BLOGS.map((b) => (
-                    <div key={b.id} className={styles.gridCard}>
+                    <button key={b.id} className={`${styles.gridCard} ${styles.gridCardClickable}`} onClick={() => setActiveBlog(b.id)}>
                       <p className={styles.gridCardTitle}>{b.title}</p>
                       <p className={styles.gridCardMeta}>{b.date}</p>
-                      <span className={styles.stub}>→ /blogs/{b.slug}</span>
-                    </div>
+                      {b.tags && (
+                        <div className={styles.gridCardTags}>
+                          {b.tags.map(t => <span key={t} className={styles.gridCardTag}>{t}</span>)}
+                        </div>
+                      )}
+                      <span className={styles.gridCardRead}>♥ Read</span>
+                    </button>
                   ))}
                 </div>
               </section>
@@ -414,6 +498,18 @@ export default function Page() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* ── Blog viewer overlay ── */}
+      <AnimatePresence>
+        {activeBlog && (
+          <BlogViewer
+            key="blog-viewer"
+            posts={BLOGS}
+            initialId={activeBlog}
+            onClose={() => setActiveBlog(null)}
+          />
+        )}
+      </AnimatePresence>
     </BalatroDeck>
   )
 }
