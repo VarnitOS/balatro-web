@@ -114,8 +114,6 @@ export default function ContactClient() {
           {/* ── Book a meeting ── */}
           <section className={styles.panel}>
             <h2 className={styles.panelTitle}>BOOK A MEETING</h2>
-            {/* Replace TODO_REPLACE_WITH_YOUR_CALENDLY_URL with your Calendly link, e.g.:
-                https://calendly.com/yourname/30min */}
             <div
               className="calendly-inline-widget"
               data-url="https://calendly.com/varnitsahu123?background_color=0a0e1a&text_color=ffffff&primary_color=2A8840"

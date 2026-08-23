@@ -30,11 +30,12 @@ export async function POST(req: NextRequest) {
       from: 'Contact Form <onboarding@resend.dev>',
       to: 'vsahu@uwaterloo.ca',
       replyTo: email.trim(),
-      subject: `[varnitsahu.com] Message from ${name.trim()}`,
+      subject: `[varnitsahu.com] Message from ${name.trim().replace(/\s+/g, ' ')}`,
       text: `Name: ${name.trim()}\nEmail: ${email.trim()}\n\n${message.trim()}`,
     })
     return NextResponse.json({ ok: true })
-  } catch {
+  } catch (err) {
+    console.error('[/api/contact] Resend error:', err)
     return NextResponse.json({ error: 'Failed to send' }, { status: 500 })
   }
 }
