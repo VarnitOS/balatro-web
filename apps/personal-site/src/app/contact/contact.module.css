@@ -200,7 +200,7 @@
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  padding: 8px 0 32px;
+  padding: 4px 0;
 }
 
 .socialRow {
