@@ -497,6 +497,7 @@ export default function Page() {
                     <span className={styles.contactSep}>·</span>
                     <a href="https://linkedin.com/in/varnitsahu" className={styles.contactLink} target="_blank" rel="noopener noreferrer">LinkedIn</a>
                   </div>
+                  <a href="/contact" className={styles.contactFullLink}>Open full contact page →</a>
                 </div>
               </section>
 
