@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import Script from 'next/script'
 import Link from 'next/link'
 import { BalatroDeck, Card } from '@balatro/cards'
 import type { BalatroCard } from '@balatro/cards'
@@ -117,15 +116,15 @@ export default function ContactClient() {
           {/* ── Book a meeting ── */}
           <section className={styles.panel}>
             <h2 className={styles.panelTitle}>BOOK A MEETING</h2>
-            <div
-              className="calendly-inline-widget"
-              data-url="https://calendly.com/varnitsahu123?background_color=0a0e1a&text_color=ffffff&primary_color=2A8840"
-              style={{ minWidth: '320px', height: '630px' }}
-            />
-            <Script
-              src="https://assets.calendly.com/assets/external/widget.js"
-              strategy="lazyOnload"
-            />
+            <p className={styles.calDesc}>15-minute intro call — pick a time that works for you.</p>
+            <a
+              href="https://cal.com/varnit-sahu-hyslva/15min"
+              className={styles.calBtn}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              LET&apos;S CHAT →
+            </a>
           </section>
 
         </main>

@@ -230,6 +230,36 @@
   box-shadow: 0 7px 0 #111, 0 9px 0 rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.07);
 }
 
+/* ── Cal.com button ── */
+.calDesc {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0 0 20px;
+}
+
+.calBtn {
+  display: inline-flex;
+  align-items: center;
+  background: #3A5DC9;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 10px;
+  padding: 14px 32px 16px;
+  font-size: 22px;
+  box-shadow: 0 5px 0 #1E3A8A, 0 7px 0 rgba(0, 0, 0, 0.5);
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+
+.calBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 0 #1E3A8A, 0 9px 0 rgba(0, 0, 0, 0.5);
+}
+
+.calBtn:active {
+  transform: translateY(2px);
+  box-shadow: 0 3px 0 #1E3A8A, 0 4px 0 rgba(0, 0, 0, 0.5);
+}
+
 .emailBtn {
   background: #2A8840;
   box-shadow: 0 5px 0 #0A5520, 0 7px 0 rgba(0, 0, 0, 0.55);
