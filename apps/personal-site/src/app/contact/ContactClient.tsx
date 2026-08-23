@@ -118,7 +118,7 @@ export default function ContactClient() {
                 https://calendly.com/yourname/30min */}
             <div
               className="calendly-inline-widget"
-              data-url="TODO_REPLACE_WITH_YOUR_CALENDLY_URL?background_color=0a0e1a&text_color=ffffff&primary_color=2A8840"
+              data-url="https://calendly.com/varnitsahu123?background_color=0a0e1a&text_color=ffffff&primary_color=2A8840"
               style={{ minWidth: '320px', height: '630px' }}
             />
             <Script
