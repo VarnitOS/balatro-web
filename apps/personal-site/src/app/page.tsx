@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { BalatroDeck, Card } from '@balatro/cards'
@@ -8,10 +9,11 @@ import type { BalatroCard } from '@balatro/cards'
 import BalatroBackground from '@/components/BalatroBackground'
 import { CardFan } from '@/components/CardFan'
 import type { FanItem } from '@/components/CardFan'
-import BlogViewer from '@/components/BlogViewer'
 import { useScrollToEnter } from '@/hooks/useScrollToEnter'
 import { useBackgroundMusic } from '@/hooks/useBackgroundMusic'
 import styles from './page.module.css'
+
+const BlogViewer = dynamic(() => import('@/components/BlogViewer'), { ssr: false })
 
 // ── Hero card ──────────────────────────────────────────────────────────────
 const ACE_OF_SPADES: BalatroCard = {
@@ -152,6 +154,11 @@ const PROJECTS: ProjectEntry[] = [
 
 const BLOGS: BlogEntry[] = [
   {
+    id: 'blog-3', rank: 'Q', suit: 'hearts',
+    title: 'PageRank Analysis. (is it really worth $trillion)', date: '2026', slug: 'pagerank-article',
+    pdf: '/blogs/pagerank_article.pdf',
+  },
+  {
     id: 'blog-2', rank: 'K', suit: 'hearts',
     title: 'Bellman Optimality Equation', date: '2025', slug: 'bellman-optimality-equation',
     pdf: '/blogs/GameTheory.pdf',
@@ -182,6 +189,7 @@ export default function Page() {
   const [hasEnteredSite, setHasEnteredSite] = useState(false)
   const [activeSection, setActiveSection] = useState<string>('intro')
   const [activeBlog, setActiveBlog] = useState<string | null>(null)
+  const [activeExpId, setActiveExpId] = useState<string | null>(null)
 
   const { play: playMusic } = useBackgroundMusic('/music/theme.mp4')
 
@@ -222,25 +230,26 @@ export default function Page() {
   }
 
   // ── Card fan data builders ────────────────────────────────────────────
-  const experienceFan: FanItem[] = EXPERIENCE.map((e) => ({
+  const experienceFan = useMemo<FanItem[]>(() => EXPERIENCE.map((e) => ({
     card: { id: e.id, rank: e.rank, suit: e.suit, facing: 'front' as const },
     label: e.company,
-    onClick: (_card) => scrollTo(`exp-detail-${e.id}`),
-  }))
+    onClick: (_card) => {
+      document.getElementById(`exp-detail-${e.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+      setActiveExpId(e.id)
+    },
+  })), [])
 
-  const projectFan: FanItem[] = PROJECTS.map((p) => ({
+  const projectFan = useMemo<FanItem[]>(() => PROJECTS.map((p) => ({
     card: { id: p.id, rank: p.rank, suit: p.suit, facing: 'front' as const },
     label: p.title,
-    // stub: onClick: (_card) => router.push(`/projects/${p.slug}`)
     onClick: undefined,
-  }))
+  })), [])
 
-  const blogFan: FanItem[] = BLOGS.map((b) => ({
+  const blogFan = useMemo<FanItem[]>(() => BLOGS.map((b) => ({
     card: { id: b.id, rank: b.rank, suit: b.suit, facing: 'front' as const },
     label: b.title,
-    // stub: onClick: (_card) => router.push(`/blogs/${b.slug}`)
     onClick: undefined,
-  }))
+  })), [])
 
   // ── Shared nav buttons renderer ──────────────────────────────────────
   function navButtons(compact: boolean) {
@@ -373,11 +382,11 @@ export default function Page() {
                   <div className={styles.introBody}>
                     <p className={styles.introName}>VARNIT SAHU</p>
                     <p className={styles.introSub}>
-                      <img src="https://www.google.com/s2/favicons?domain=uwaterloo.ca&sz=64" alt="UW" width={18} height={18} className={styles.companyLogo} />
+                      <img src="https://www.google.com/s2/favicons?domain=uwaterloo.ca&sz=64" alt="UW" width={18} height={18} className={styles.companyLogo} loading="lazy" />
                       Computer Science, Artificial Intelligence Specialization, Statistics Minor · University of Waterloo
                     </p>
                     <p className={styles.introBlurb}>
-                      Co-founding <strong>IPAiC</strong>, an AI copilot for Infection Prevention and Control teams investigating healthcare-associated infections (25+ customer interviews, $1K in non-dilutive funding from Velocity)
+                      Co-founding <a href="https://ipaichealth.com/" target="_blank" rel="noopener noreferrer" className={styles.aboutCompanyLink}><strong>IPAiC</strong></a>, an AI copilot for Infection Prevention and Control teams investigating healthcare-associated infections (25+ customer interviews, $1K in non-dilutive funding from Velocity)
                     </p>
                     <div className={styles.aboutBullets} style={{ marginTop: '28px' }}>
                       <div className={styles.aboutBullet}>
@@ -386,7 +395,7 @@ export default function Page() {
                         <a className={styles.aboutCompanyLink} href={`https://${EXPERIENCE[0].domain}`} target="_blank" rel="noopener noreferrer">
                           <img
                             src={`https://www.google.com/s2/favicons?domain=${EXPERIENCE[0].domain}&sz=64`}
-                            alt="" width={18} height={18} className={styles.companyLogo}
+                            alt="" width={18} height={18} className={styles.companyLogo} loading="lazy"
                           />
                           {EXPERIENCE[0].company}
                         </a>
@@ -402,7 +411,7 @@ export default function Page() {
                           <a className={styles.aboutCompanyLink} href={`https://${exp.domain}`} target="_blank" rel="noopener noreferrer">
                             <img
                               src={`https://www.google.com/s2/favicons?domain=${exp.domain}&sz=64`}
-                              alt="" width={18} height={18} className={styles.companyLogo}
+                              alt="" width={18} height={18} className={styles.companyLogo} loading="lazy"
                             />
                             {exp.company}
                           </a>
@@ -423,15 +432,16 @@ export default function Page() {
                   <span className={styles.suit}>♦</span> EXPERIENCE
                 </h2>
                 <p className={styles.sectionHint}>Click a card to jump to that role.</p>
-                <CardFan items={experienceFan} cardWidth={150} cardHeight={210} fanAngle={18} />
+                <CardFan items={experienceFan} cardWidth={150} cardHeight={210} fanAngle={18} activeId={activeExpId} />
 
                 <div className={styles.expGrid}>
                   {EXPERIENCE.map((exp) => (
-                    <div key={exp.id} id={`exp-detail-${exp.id}`} className={styles.expLogoCard}>
+                    <div key={exp.id} id={`exp-detail-${exp.id}`} className={`${styles.expLogoCard} ${activeExpId === exp.id ? styles.expLogoCardActive : ''}`}>
                       <img
                         src={`https://www.google.com/s2/favicons?domain=${exp.domain}&sz=64`}
                         alt={`${exp.company} logo`}
                         className={styles.expLogo}
+                        loading="lazy"
                         onError={(e) => { e.currentTarget.style.display = 'none' }}
                       />
                       <p className={styles.expCardRole}>{exp.role}</p>
